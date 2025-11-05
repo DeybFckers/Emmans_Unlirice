@@ -17,6 +17,7 @@ class ProductScreen extends ConsumerWidget {
     final screenSize = MediaQuery.of(context).size;
     final cartProducts = ref.watch(cartNotifierProvider);
     final selectedIndex = ref.watch(selectedTabProvider);
+
     final filteredProducts = allProducts.where((product) {
       if (selectedIndex == 0) return product.category == 'coffee';
       if (selectedIndex == 1) return product.category == 'food';
