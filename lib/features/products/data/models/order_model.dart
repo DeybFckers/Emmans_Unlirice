@@ -5,6 +5,8 @@ class OrderModel {
   final double totalAmount;
   final double amountGiven;
   final double change;
+  final String orderType;
+  final String paymentMethod;
   final String createdAt;
 
   OrderModel({
@@ -13,6 +15,8 @@ class OrderModel {
     required this.totalAmount,
     required this.amountGiven,
     required this.change,
+    required this.orderType,
+    required this.paymentMethod,
     required this.createdAt,
 
   });
@@ -24,6 +28,8 @@ class OrderModel {
         totalAmount: (map['Total_Amount'] as num).toDouble(),
         amountGiven: (map['Amount_Given'] as num).toDouble(),
         change: (map['Change'] as num).toDouble(),
+        orderType: map['Order_Type'] as String,
+        paymentMethod: map['Payment_Method'] as String,
         createdAt: map['Created_At'] as String,
     );
   }

@@ -15,6 +15,8 @@ class OrderRepository {
         OrderTable.OrderTotalAmount: order.totalAmount,
         OrderTable.OrderAmountGiven: order.amountGiven,
         OrderTable.OrderChange: order.change,
+        OrderTable.OrderType: order.orderType,
+        OrderTable.OrderPayment: order.paymentMethod,
         OrderTable.OrderCreatedAT: order.createdAt,
       });
 

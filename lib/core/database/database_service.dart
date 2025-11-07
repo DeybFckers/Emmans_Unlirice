@@ -18,6 +18,7 @@ class StreetSideDatabase{
   Future<Database> getDatabase() async{
     final databaseDirPath = await getDatabasesPath();
     final databasePath = join(databaseDirPath, "streetside_db.db");
+    // await deleteDatabase(databasePath);
 
     final database =  await openDatabase(
       databasePath,
@@ -39,6 +40,8 @@ class StreetSideDatabase{
         ${OrderTable.OrderTotalAmount} REAL NOT NULL,
         ${OrderTable.OrderAmountGiven} REAL,
         ${OrderTable.OrderChange} REAL,
+        ${OrderTable.OrderType} TEXT CHECK (${OrderTable.OrderType} IN ('Dine In', 'Take Out')) NOT NULL,
+        ${OrderTable.OrderPayment} TEXT CHECK(${OrderTable.OrderPayment} IN ('Cash', 'Gcash')) NOT NULL,
         ${OrderTable.OrderCreatedAT} TEXT DEFAULT CURRENT_TIMESTAMP
         )
         ''');

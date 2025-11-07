@@ -185,6 +185,8 @@ class ProductScreen extends ConsumerWidget {
                               print("Total Amount: ${order.totalAmount}");
                               print("Amount Given: ${order.amountGiven}");
                               print("Change: ${order.change}");
+                              print("Order Type: ${order.orderType}");
+                              print("Payment Method: ${order.paymentMethod}");
                               print("Created At: ${order.createdAt}");
                               print("----------------------");
                             }
@@ -323,6 +325,8 @@ class ProductScreen extends ConsumerWidget {
                                               final nameController = TextEditingController();
                                               final cashController = TextEditingController();
                                               final formKey = GlobalKey<FormState>();
+                                              String? orderType = 'Dine In';
+                                              String? paymentMethod = 'Cash';
                                               double change = 0.0;
                                               return AlertDialog(
                                                 backgroundColor: Colors.brown.withOpacity(0.85),
@@ -337,6 +341,41 @@ class ProductScreen extends ConsumerWidget {
                                                     child: Column(
                                                       mainAxisSize: MainAxisSize.min,
                                                       children: [
+                                                        Row(
+                                                          children: [
+                                                            Radio<String>(
+                                                                value: 'Cash',
+                                                                groupValue: paymentMethod,
+                                                                activeColor:  Colors.black,
+                                                                onChanged: (value){
+                                                                  setState((){
+                                                                    paymentMethod = value;
+                                                                  });
+                                                                }
+                                                            ),
+                                                            Text('Cash',
+                                                              style: TextStyle(
+                                                                color: Colors.white,
+                                                              ),
+                                                            ),
+                                                            SizedBox(width: 10),
+                                                            Radio<String>(
+                                                                value: 'Gcash',
+                                                                groupValue: paymentMethod,
+                                                                activeColor:  Colors.black,
+                                                                onChanged: (value){
+                                                                  setState((){
+                                                                    paymentMethod = value;
+                                                                  });
+                                                                }
+                                                            ),
+                                                            Text('Gcash',
+                                                              style: TextStyle(
+                                                                color: Colors.white,
+                                                              ),
+                                                            ),
+                                                          ],
+                                                        ),
                                                         TextFormField(
                                                           controller: nameController,
                                                           decoration: customInputDecoration(
@@ -352,25 +391,59 @@ class ProductScreen extends ConsumerWidget {
                                                           ),
                                                         ),
                                                         SizedBox(height: 10),
-                                                        TextFormField(
-                                                          controller: cashController,
-                                                          keyboardType: TextInputType.number,
-                                                          decoration: customInputDecoration(
-                                                            'Amount Given',
-                                                            Icons.attach_money
+                                                        if (paymentMethod == 'Cash') ...[
+                                                          TextFormField(
+                                                            controller: cashController,
+                                                            keyboardType: TextInputType.number,
+                                                            decoration: customInputDecoration(
+                                                                'Amount Given', Icons.attach_money),
+                                                            validator: CheckoutValidator.amountGiven,
+                                                            onChanged: (val) {
+                                                              final cash = double.tryParse(val) ?? 0;
+                                                              setState(() => change = cash - total);
+                                                            },
                                                           ),
-                                                          validator: CheckoutValidator.amountGiven,
-                                                          onChanged: (val) {
-                                                            final cash = double.tryParse(val) ?? 0;
-                                                            setState(() => change = cash - total);
-                                                          },
-                                                        ),
-                                                        SizedBox(height: 10),
-                                                        Text('Change: ₱${change.toStringAsFixed(2)}',
-                                                          style: TextStyle(
-                                                            color: Colors.white,
+                                                          SizedBox(height: 10),
+                                                          Text(
+                                                            'Change: ₱${change.toStringAsFixed(2)}',
+                                                            style: TextStyle(color: Colors.white),
                                                           ),
-                                                        ),
+                                                        ],
+                                                        Row(
+                                                          children: [
+                                                            Radio<String>(
+                                                              value: 'Dine In',
+                                                              groupValue: orderType,
+                                                              activeColor: Colors.black,
+                                                              onChanged: (value){
+                                                                setState((){
+                                                                  orderType = value;
+                                                                });
+                                                              }
+                                                            ),
+                                                            Text('Dine In',
+                                                              style: TextStyle(
+                                                                color: Colors.white,
+                                                              ),
+                                                            ),
+                                                            SizedBox(width: 10),
+                                                            Radio<String>(
+                                                              value: 'Take Out',
+                                                              groupValue: orderType,
+                                                                activeColor: Colors.black,
+                                                              onChanged: (value){
+                                                                setState((){
+                                                                  orderType = value;
+                                                                });
+                                                              }
+                                                            ),
+                                                            Text('Take Out',
+                                                              style: TextStyle(
+                                                                color: Colors.white,
+                                                              ),
+                                                            ),
+                                                          ]
+                                                        )
                                                       ],
                                                     ),
                                                   ),
@@ -389,7 +462,7 @@ class ProductScreen extends ConsumerWidget {
                                                       if(formKey.currentState!.validate()){
                                                         final cashGiven =  double.tryParse(cashController.text) ?? 0.0;
 
-                                                        if(cashGiven < total){
+                                                        if(cashGiven < total && paymentMethod == 'Cash'){
                                                           Get.snackbar(
                                                             "Error", "Insufficient Funds",
                                                             snackPosition: SnackPosition.BOTTOM,
@@ -408,8 +481,10 @@ class ProductScreen extends ConsumerWidget {
                                                         final order = OrderModel(
                                                             name: nameController.text,
                                                             totalAmount: total,
-                                                            amountGiven: double.tryParse(cashController.text) ?? 0.0,
-                                                            change: change,
+                                                            amountGiven: paymentMethod == 'Cash' ? cashGiven : total,
+                                                            change: paymentMethod == 'Cash' ? change : 0.0,
+                                                            paymentMethod: paymentMethod ?? 'Cash',
+                                                            orderType: orderType ?? 'Dine In',
                                                             createdAt: DateTime.now().toIso8601String()
                                                         );
 
