@@ -8,6 +8,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:get/get.dart';
 import 'dart:io';
 import 'package:path_provider/path_provider.dart';
+import 'package:image/image.dart' as img;
 
 
 class AddProduct extends ConsumerStatefulWidget {
@@ -30,6 +31,27 @@ class _AddProductState extends ConsumerState<AddProduct> {
   Future<String> saveFilePermanently(PlatformFile file) async {
     final appStorage = await getApplicationDocumentsDirectory();
     final newFile = File('${appStorage.path}/${file.name}');
+
+    final originalBytes = await File(file.path!).readAsBytes();
+
+    final originalImage = img.decodeImage(originalBytes);
+
+    if (originalImage != null) {
+
+      final resizedImage = img.copyResize(
+        originalImage,
+        width: 200,
+        height: 200,
+        interpolation: img.Interpolation.cubic,
+      );
+
+      final resizedBytes = img.encodePng(resizedImage);
+
+      await File(newFile.path).writeAsBytes(resizedBytes);
+
+      return newFile.path;
+    }
+
     return await File(file.path!).copy(newFile.path).then((f) => f.path);
   }
 

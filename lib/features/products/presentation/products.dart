@@ -122,7 +122,7 @@ class ProductScreen extends ConsumerWidget {
                               shrinkWrap: true,
                               physics: NeverScrollableScrollPhysics(),
                               gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
-                                crossAxisCount: 6,
+                                crossAxisCount: (screenSize.width ~/ 180).clamp(2, 6),
                                 crossAxisSpacing: 12,
                                 mainAxisSpacing: 12,
                                 childAspectRatio: 0.8,
@@ -137,7 +137,7 @@ class ProductScreen extends ConsumerWidget {
                                     },
                                     child: Card(
                                       color: Color.fromARGB(255, 245, 237, 224),
-                                      elevation: 4,
+                                      elevation: 6,
                                       shape: RoundedRectangleBorder(
                                         borderRadius: BorderRadius.circular(12),
                                       ),
@@ -149,12 +149,24 @@ class ProductScreen extends ConsumerWidget {
                                             ClipRRect(
                                               borderRadius: BorderRadius.vertical(top: Radius.circular(12)),
                                               child: Image.file(
-                                                  File(product.imageUrl),
-                                                  width: 60, height: 60
+                                                File(product.imageUrl),
+                                                width: 60, height: 60,
+                                                fit: BoxFit.cover,
                                               ),
                                             ),
-                                            Text(product.name),
-                                            Text('₱${product.price}'),
+                                            SizedBox(height: 10),
+                                            Text(product.name,
+                                              style: TextStyle(
+                                                fontWeight: FontWeight.bold,
+                                                fontSize: 14
+                                              )
+                                            ),
+                                            Text('₱${product.price}',
+                                              style: TextStyle(
+                                                fontSize: 12,
+                                                color: Colors.grey
+                                              ),
+                                            ),
                                           ],
                                         ),
                                       ),
@@ -253,48 +265,52 @@ class ProductScreen extends ConsumerWidget {
                                             children: [
                                               Row(
                                                 children: [
-                                                  Expanded(
-                                                    child: ListTile(
-                                                      leading: Image.file(
-                                                        File(product.imageUrl),
-                                                        width: 70,
-                                                        height: 120,
-                                                        fit: BoxFit.cover,
-                                                      ),
-                                                      title: Text(product.name),
-                                                      subtitle: Text('₱${product.price}'),
-                                                    ),
+                                                  Image.file(
+                                                    File(product.imageUrl),
+                                                    width: 60,
+                                                    height: 60,
+                                                    fit: BoxFit.cover,
                                                   ),
-                                                  Container(
-                                                    padding: const EdgeInsets.symmetric(horizontal: 8),
-                                                    decoration: BoxDecoration(
-                                                      color: Color.fromARGB(255, 245, 237, 224),
-                                                      borderRadius: BorderRadius.circular(8),
-                                                      border: Border.all(color: Colors.brown),
-                                                    ),
-                                                    child: Row(
-                                                      mainAxisSize: MainAxisSize.min,
+                                                  SizedBox(width: 10),
+                                                  Expanded(
+                                                    child: Column(
+                                                      crossAxisAlignment: CrossAxisAlignment.start,
                                                       children: [
-                                                        IconButton(
-                                                          icon: Icon(Icons.remove),
-                                                          onPressed: () {
-                                                            ref.read(cartNotifierProvider.notifier).subtractQuantity(product);
-                                                          },
-                                                        ),
-                                                        Text('$quantity',
-                                                          style: TextStyle(
-                                                            fontSize: 18,
-                                                            fontWeight: FontWeight.bold
-                                                          ),
-                                                        ),
-                                                        IconButton(
-                                                          icon: Icon(Icons.add),
-                                                          onPressed: () {
-                                                            ref.read(cartNotifierProvider.notifier).addQuantity(product);
-                                                          },
+                                                        Text(product.name,
+                                                            style: const TextStyle(
+                                                                fontWeight: FontWeight.bold, fontSize: 14)),
+                                                        Text('₱${product.price}',
+                                                            style: const TextStyle(fontSize: 12, color: Colors.grey)),
+                                                        Text(
+                                                          'Subtotal: ₱${(product.price * quantity).toStringAsFixed(2)}',
+                                                          style: const TextStyle(
+                                                              fontSize: 12, color: Colors.brown),
                                                         ),
                                                       ],
                                                     ),
+                                                  ),
+                                                  Row(
+                                                    mainAxisSize: MainAxisSize.min,
+                                                    children: [
+                                                      IconButton(
+                                                        icon: Icon(Icons.remove),
+                                                        onPressed: () {
+                                                          ref.read(cartNotifierProvider.notifier).subtractQuantity(product);
+                                                        },
+                                                      ),
+                                                      Text('$quantity',
+                                                        style: TextStyle(
+                                                          fontSize: 18,
+                                                          fontWeight: FontWeight.bold
+                                                        ),
+                                                      ),
+                                                      IconButton(
+                                                        icon: Icon(Icons.add),
+                                                        onPressed: () {
+                                                          ref.read(cartNotifierProvider.notifier).addQuantity(product);
+                                                        },
+                                                      ),
+                                                    ],
                                                   ),
                                                   IconButton(
                                                     icon: Icon(Icons.delete),
@@ -335,116 +351,141 @@ class ProductScreen extends ConsumerWidget {
                                                     color: Colors.white,
                                                   ),
                                                 ),
-                                                content: StatefulBuilder(
-                                                  builder: (context, setState) => Form(
-                                                    key: formKey,
-                                                    child: Column(
-                                                      mainAxisSize: MainAxisSize.min,
-                                                      children: [
-                                                        Row(
-                                                          children: [
-                                                            Radio<String>(
-                                                                value: 'Cash',
-                                                                groupValue: paymentMethod,
-                                                                activeColor:  Colors.black,
-                                                                onChanged: (value){
-                                                                  setState((){
-                                                                    paymentMethod = value;
-                                                                  });
-                                                                }
-                                                            ),
-                                                            Text('Cash',
+                                                content: SizedBox(
+                                                  width: screenSize.width * 0.25,
+                                                  child: StatefulBuilder(
+                                                    builder: (context, setState) => Form(
+                                                      key: formKey,
+                                                      child: Column(
+                                                        mainAxisSize: MainAxisSize.min,
+                                                        children: [
+                                                          Align(
+                                                            alignment: Alignment.centerLeft,
+                                                            child: Text('Payment Method',
                                                               style: TextStyle(
-                                                                color: Colors.white,
-                                                              ),
+                                                                  fontWeight: FontWeight.bold,
+                                                                  color: Colors.white,
+                                                              )
                                                             ),
-                                                            SizedBox(width: 10),
-                                                            Radio<String>(
-                                                                value: 'Gcash',
-                                                                groupValue: paymentMethod,
-                                                                activeColor:  Colors.black,
-                                                                onChanged: (value){
-                                                                  setState((){
-                                                                    paymentMethod = value;
-                                                                  });
-                                                                }
-                                                            ),
-                                                            Text('Gcash',
-                                                              style: TextStyle(
-                                                                color: Colors.white,
-                                                              ),
-                                                            ),
-                                                          ],
-                                                        ),
-                                                        TextFormField(
-                                                          controller: nameController,
-                                                          decoration: customInputDecoration(
-                                                            'Customer Name',
-                                                            Icons.person
                                                           ),
-                                                          validator: CheckoutValidator.customerName,
-                                                        ),
-                                                        SizedBox(height: 10),
-                                                        Text('Total: ₱${total.toStringAsFixed(2)}',
-                                                          style: TextStyle(
-                                                            color: Colors.white,
+                                                          Row(
+                                                            mainAxisAlignment: MainAxisAlignment.center,
+                                                            children: [
+                                                              Radio<String>(
+                                                                  value: 'Cash',
+                                                                  groupValue: paymentMethod,
+                                                                  activeColor:  Colors.black,
+                                                                  onChanged: (value){
+                                                                    setState((){
+                                                                      paymentMethod = value;
+                                                                    });
+                                                                  }
+                                                              ),
+                                                              Text('Cash',
+                                                                style: TextStyle(
+                                                                  color: Colors.white,
+                                                                ),
+                                                              ),
+                                                              SizedBox(width: 10),
+                                                              Radio<String>(
+                                                                  value: 'Gcash',
+                                                                  groupValue: paymentMethod,
+                                                                  activeColor:  Colors.black,
+                                                                  onChanged: (value){
+                                                                    setState((){
+                                                                      paymentMethod = value;
+                                                                    });
+                                                                  }
+                                                              ),
+                                                              Text('Gcash',
+                                                                style: TextStyle(
+                                                                  color: Colors.white,
+                                                                ),
+                                                              ),
+                                                            ],
                                                           ),
-                                                        ),
-                                                        SizedBox(height: 10),
-                                                        if (paymentMethod == 'Cash') ...[
                                                           TextFormField(
-                                                            controller: cashController,
-                                                            keyboardType: TextInputType.number,
+                                                            controller: nameController,
+                                                            autofocus: true,
                                                             decoration: customInputDecoration(
-                                                                'Amount Given', Icons.attach_money),
-                                                            validator: CheckoutValidator.amountGiven,
-                                                            onChanged: (val) {
-                                                              final cash = double.tryParse(val) ?? 0;
-                                                              setState(() => change = cash - total);
-                                                            },
+                                                              'Customer Name',
+                                                              Icons.person
+                                                            ),
+                                                            validator: CheckoutValidator.customerName,
                                                           ),
                                                           SizedBox(height: 10),
-                                                          Text(
-                                                            'Change: ₱${change.toStringAsFixed(2)}',
-                                                            style: TextStyle(color: Colors.white),
+                                                          Text('Total: ₱${total.toStringAsFixed(2)}',
+                                                            style: TextStyle(
+                                                              color: Colors.white,
+                                                            ),
                                                           ),
-                                                        ],
-                                                        Row(
-                                                          children: [
-                                                            Radio<String>(
-                                                              value: 'Dine In',
-                                                              groupValue: orderType,
-                                                              activeColor: Colors.black,
-                                                              onChanged: (value){
-                                                                setState((){
-                                                                  orderType = value;
-                                                                });
-                                                              }
+                                                          SizedBox(height: 15),
+                                                          if (paymentMethod == 'Cash') ...[
+                                                            TextFormField(
+                                                              controller: cashController,
+                                                              keyboardType: TextInputType.number,
+                                                              decoration: customInputDecoration(
+                                                                  'Amount Given', Icons.attach_money),
+                                                              validator: CheckoutValidator.amountGiven,
+                                                              onChanged: (val) {
+                                                                final cash = double.tryParse(val) ?? 0;
+                                                                setState(() => change = cash - total);
+                                                              },
                                                             ),
-                                                            Text('Dine In',
+                                                            SizedBox(height: 10),
+                                                            Text(
+                                                              'Change: ₱${change.toStringAsFixed(2)}',
+                                                              style: TextStyle(color: Colors.white),
+                                                            ),
+                                                          ],
+                                                          SizedBox(height: 15),
+                                                          Align(
+                                                            alignment: Alignment.centerLeft,
+                                                            child: Text('Order Type',
                                                               style: TextStyle(
+                                                                fontWeight: FontWeight.bold,
                                                                 color: Colors.white,
-                                                              ),
+                                                              )
                                                             ),
-                                                            SizedBox(width: 10),
-                                                            Radio<String>(
-                                                              value: 'Take Out',
-                                                              groupValue: orderType,
+                                                          ),
+                                                          Row(
+                                                            mainAxisAlignment: MainAxisAlignment.center,
+                                                            children: [
+                                                              Radio<String>(
+                                                                value: 'Dine In',
+                                                                groupValue: orderType,
                                                                 activeColor: Colors.black,
-                                                              onChanged: (value){
-                                                                setState((){
-                                                                  orderType = value;
-                                                                });
-                                                              }
-                                                            ),
-                                                            Text('Take Out',
-                                                              style: TextStyle(
-                                                                color: Colors.white,
+                                                                onChanged: (value){
+                                                                  setState((){
+                                                                    orderType = value;
+                                                                  });
+                                                                }
                                                               ),
-                                                            ),
-                                                          ]
-                                                        )
-                                                      ],
+                                                              Text('Dine In',
+                                                                style: TextStyle(
+                                                                  color: Colors.white,
+                                                                ),
+                                                              ),
+                                                              SizedBox(width: 10),
+                                                              Radio<String>(
+                                                                value: 'Take Out',
+                                                                groupValue: orderType,
+                                                                  activeColor: Colors.black,
+                                                                onChanged: (value){
+                                                                  setState((){
+                                                                    orderType = value;
+                                                                  });
+                                                                }
+                                                              ),
+                                                              Text('Take Out',
+                                                                style: TextStyle(
+                                                                  color: Colors.white,
+                                                                ),
+                                                              ),
+                                                            ]
+                                                          )
+                                                        ],
+                                                      ),
                                                     ),
                                                   ),
                                                 ),
