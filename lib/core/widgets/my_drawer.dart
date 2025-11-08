@@ -1,3 +1,4 @@
+import 'package:coffee_pos/features/Analytics/presentation/analytics.dart';
 import 'package:coffee_pos/features/products/presentation/products.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
@@ -19,6 +20,7 @@ class MyDrawer extends StatelessWidget {
 
   final List<Map<String, dynamic>> menuItems = [
     {"icon": Icons.coffee, "title": "Products", "page": () => ProductScreen()},
+    {"icon": Icons.analytics, "title": "Analytics", "page": () => AnalyticsScreen()},
 
   ];
 

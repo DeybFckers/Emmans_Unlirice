@@ -24,4 +24,17 @@ class OrderlistRepository {
       return {};
     }
   }
+
+  Future<void> updateOrderStatus(int orderId, String status) async{
+    try{
+      final db = await _database.database;
+      await db.update(OrderTable.OrderTableName,
+        {OrderTable.OrderStatus: status},
+        where: 'Order_Id = ?',
+        whereArgs: [orderId]
+      );
+    }catch(e){
+      print('error status update $e');
+    }
+  }
 }

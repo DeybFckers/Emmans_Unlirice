@@ -18,6 +18,27 @@ class OrderlistNotifier extends StateNotifier<AsyncValue<Map<int, List<orderList
       state = AsyncValue.error(e, st);
     }
   }
+
+  Future<void> updateOrderStatus(int orderId, String status) async {
+    try {
+      // 1. Update in DB
+      await _orderListRepository.updateOrderStatus(orderId, status);
+
+      // 2. Update locally in state
+      state = state.whenData((groupedOrders) {
+        final updated = Map<int, List<orderListModel>>.from(groupedOrders);
+        final orderItems = updated[orderId];
+        if (orderItems != null) {
+          for (var item in orderItems) {
+            item.OrderStatus = status;
+          }
+        }
+        return updated;
+      });
+    } catch (e) {
+      print('Error updating status in provider: $e');
+    }
+  }
 }
 
 final orderListRepositoryProvider = Provider<OrderlistRepository>((ref) {

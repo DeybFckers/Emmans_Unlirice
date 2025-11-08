@@ -44,7 +44,7 @@ class StreetSideDatabase{
         ${OrderTable.OrderChange} REAL,
         ${OrderTable.OrderType} TEXT CHECK (${OrderTable.OrderType} IN ('Dine In', 'Take Out')) NOT NULL,
         ${OrderTable.OrderPayment} TEXT CHECK(${OrderTable.OrderPayment} IN ('Cash', 'Gcash')) NOT NULL,
-        ${OrderTable.OrderStatus} TEXT NOT NULL CHECK (${OrderTable.OrderStatus} IN ('In Progress', 'Completed')) DEFAULT 'In Progress',
+        ${OrderTable.OrderStatus} TEXT NOT NULL CHECK (${OrderTable.OrderStatus} IN ('In Progress', 'Completed', 'Refund')) DEFAULT 'In Progress',
         ${OrderTable.OrderCreatedAT} TEXT DEFAULT CURRENT_TIMESTAMP
         )
         ''');
@@ -62,7 +62,7 @@ class StreetSideDatabase{
         ''');
         //getOrdersWithItems()
         db.execute('''
-        CREATE OR REPLACE VIEW IF NOT EXISTS ${OrderTable.ListTableName} AS
+        CREATE VIEW IF NOT EXISTS ${OrderTable.ListTableName} AS
         SELECT 
           o.${OrderTable.OrderID} as orderId,
           o.${OrderTable.OrderCustomer} as Customer_Name,

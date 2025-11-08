@@ -9,7 +9,7 @@ class orderListModel {
   final double OrderChange;
   final String OrderType;
   final String PaymentMethod;
-  final String OrderStatus;
+  String OrderStatus;
   final String Date;
 
   orderListModel ({

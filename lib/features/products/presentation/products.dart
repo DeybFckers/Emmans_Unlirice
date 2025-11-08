@@ -4,7 +4,6 @@ import 'package:coffee_pos/features/orderlist/provider/orderlist_provider.dart';
 import 'package:coffee_pos/features/products/data/models/item_model.dart';
 import 'package:coffee_pos/features/products/data/models/order_model.dart';
 import 'package:coffee_pos/features/products/data/provider/cart_notifier.dart';
-import 'package:coffee_pos/features/products/data/provider/order_provider.dart';
 import 'package:coffee_pos/features/products/data/provider/product_provider.dart';
 import 'package:coffee_pos/features/products/data/repository/item_repository.dart';
 import 'package:coffee_pos/features/products/data/repository/order_repository.dart';
@@ -118,65 +117,64 @@ class ProductScreen extends ConsumerWidget {
                             borderRadius: BorderRadius.circular(12),
                             border: Border.all(width: 1, color: Colors.grey),
                           ),
-                          child: SingleChildScrollView(
-                            child: GridView.builder(
-                              itemCount: filteredProducts.length,
-                              shrinkWrap: true,
-                              physics: NeverScrollableScrollPhysics(),
-                              gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
-                                crossAxisCount: (screenSize.width ~/ 180).clamp(2, 6),
-                                crossAxisSpacing: 6,
-                                mainAxisSpacing: 6,
-                                childAspectRatio: 0.8,
-                              ),
-                              itemBuilder:(context, index){
-                                final product = filteredProducts[index];
-                                return Padding(
-                                  padding: const EdgeInsets.only(top:8, left: 8),
-                                  child: GestureDetector(
-                                    onTap: (){
-                                      ref.read(cartNotifierProvider.notifier).addProduct(filteredProducts[index]);
-                                    },
-                                    child: Card(
-                                      color: Color.fromARGB(255, 245, 237, 224),
-                                      elevation: 6,
-                                      shape: RoundedRectangleBorder(
-                                        borderRadius: BorderRadius.circular(12),
-                                      ),
-                                      child: Padding(
-                                        padding: const EdgeInsets.all(8.0),
-                                        child: Column(
-                                          mainAxisAlignment: MainAxisAlignment.center,
-                                          children: [
-                                            ClipRRect(
-                                              borderRadius: BorderRadius.vertical(top: Radius.circular(12)),
-                                              child: Image.file(
-                                                File(product.imageUrl),
-                                                width: 60, height: 60,
-                                                fit: BoxFit.cover,
-                                              ),
+                          child: GridView.builder(
+                            itemCount: filteredProducts.length,
+                            shrinkWrap: true,
+                            gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+                              crossAxisCount: (screenSize.width ~/ 180).clamp(2, 6),
+                              crossAxisSpacing: 6,
+                              mainAxisSpacing: 6,
+                              childAspectRatio: 0.65,
+                            ),
+                            itemBuilder:(context, index){
+                              final product = filteredProducts[index];
+                              return Padding(
+                                padding: const EdgeInsets.only(top:8, left: 8),
+                                child: GestureDetector(
+                                  onTap: (){
+                                    ref.read(cartNotifierProvider.notifier).addProduct(filteredProducts[index]);
+                                  },
+                                  child: Card(
+                                    color: Color.fromARGB(255, 245, 237, 224),
+                                    elevation: 6,
+                                    shape: RoundedRectangleBorder(
+                                      borderRadius: BorderRadius.circular(12),
+                                    ),
+                                    child: Padding(
+                                      padding: const EdgeInsets.all(8.0),
+                                      child: Column(
+                                        mainAxisAlignment: MainAxisAlignment.center,
+                                        children: [
+                                          ClipRRect(
+                                            borderRadius: BorderRadius.vertical(
+                                                top: Radius.circular(12), bottom: Radius.circular(12)
                                             ),
-                                            SizedBox(height: 10),
-                                            Text(product.name,
-                                              style: TextStyle(
-                                                fontWeight: FontWeight.bold,
-                                                fontSize: 14
-                                              )
+                                            child: Image.file(
+                                              File(product.imageUrl),
+                                              width: 150, height: 100,
+                                              fit: BoxFit.cover,
                                             ),
-                                            Text('₱${product.price}',
-                                              style: TextStyle(
-                                                fontSize: 12,
-                                                color: Colors.grey
-                                              ),
+                                          ),
+                                          SizedBox(height: 10),
+                                          Text(product.name,
+                                            style: TextStyle(
+                                              fontWeight: FontWeight.bold,
+                                              fontSize: 14
+                                            )
+                                          ),
+                                          Text('₱${product.price}',
+                                            style: TextStyle(
+                                              fontSize: 12,
+                                              color: Colors.grey
                                             ),
-                                          ],
-                                        ),
+                                          ),
+                                        ],
                                       ),
                                     ),
                                   ),
-                                );
-                              }
-                            ),
+                                ),
+                              );
+                            }
                           ),
                         ),
                       ],
@@ -513,7 +511,7 @@ class ProductScreen extends ConsumerWidget {
                                                         await orderListNotifier.fetchOrderList();
 
                                                         Get.snackbar(
-                                                          "Success", "Order Complete",
+                                                          "Success", "Order added to list",
                                                           snackPosition: SnackPosition.BOTTOM,
                                                           backgroundColor: Colors.green,
                                                           colorText: Colors.white,
