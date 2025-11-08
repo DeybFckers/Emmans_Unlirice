@@ -1,4 +1,5 @@
-import 'package:coffee_pos/features/auth/presentation/login.dart';
+
+import 'package:coffee_pos/features/products/presentation/products.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:get/get.dart';
@@ -18,7 +19,7 @@ class MyApp extends StatelessWidget {
       theme: ThemeData(
         scaffoldBackgroundColor: const Color.fromARGB(255, 245, 237, 224),
       ),
-      home: LoginScreen()
+      home: ProductScreen()
     );
   }
 }

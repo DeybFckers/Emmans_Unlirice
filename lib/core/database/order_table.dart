@@ -19,4 +19,7 @@ class OrderTable {
   static const String ItemQuantity = 'Quantity';
   static const String ItemSubtotal = 'SubTotal';
 
+  //getOrderWithItems
+  static const String ListTableName = 'OrderWithItems';
+
 }

@@ -60,6 +60,28 @@ class StreetSideDatabase{
         FOREIGN KEY (${OrderTable.ItemProduct}) REFERENCES ${ProductTable.ProductTableName}(${ProductTable.ProductID})
         ) 
         ''');
+        //getOrdersWithItems()
+        db.execute('''
+        CREATE OR REPLACE VIEW IF NOT EXISTS ${OrderTable.ListTableName} AS
+        SELECT 
+          o.${OrderTable.OrderID} as orderId,
+          o.${OrderTable.OrderCustomer} as Customer_Name,
+          o.${OrderTable.OrderTotalAmount} as Total_Amount,
+          o.${OrderTable.OrderAmountGiven} as Amount_Given,
+          o.${OrderTable.OrderChange} as Change,
+          o.${OrderTable.OrderType} as Order_Type,
+          o.${OrderTable.OrderPayment} as Payment_Method,
+          o.${OrderTable.OrderStatus} as Status,
+          o.${OrderTable.OrderCreatedAT} as Date,
+          p.${ProductTable.ProductName} as Product_Name,
+          i.${OrderTable.ItemQuantity} as Quantity,
+          i.${OrderTable.ItemSubtotal} as SubTotal
+          FROM ${OrderTable.OrderTableName} o
+          JOIN ${OrderTable.ItemTableName} i
+            ON o.${OrderTable.OrderID} = i.${OrderTable.ItemOrder}
+          JOIN ${ProductTable.ProductTableName} p
+            ON i.${OrderTable.ItemProduct} = p.${ProductTable.ProductID};
+        ''');
       }
     );
     return database;

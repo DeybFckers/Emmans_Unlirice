@@ -1,5 +1,4 @@
 import 'package:coffee_pos/features/products/presentation/products.dart';
-import 'package:coffee_pos/features/auth/presentation/login.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 
@@ -12,10 +11,6 @@ class DrawerControllerX extends GetxController{
   }
 }
 
-Future<void> logout() async {
-  Get.offAll(() => LoginScreen());
-}
-
 
 class MyDrawer extends StatelessWidget {
   MyDrawer({super.key});
@@ -24,7 +19,6 @@ class MyDrawer extends StatelessWidget {
 
   final List<Map<String, dynamic>> menuItems = [
     {"icon": Icons.coffee, "title": "Products", "page": () => ProductScreen()},
-    {"icon": Icons.logout, "title": "Logout", "page": () => LoginScreen()},
 
   ];
 
@@ -93,12 +87,8 @@ class MyDrawer extends StatelessWidget {
                         ),
                       ),
                       onTap: () {
-                        if (item["title"] == "Logout") {
-                          logout();
-                        } else {
-                          drawerController.selectIndex(index);
-                          Get.to(item["page"]());
-                        }
+                        drawerController.selectIndex(index);
+                        Get.to(item["page"]());
                       },
                     ),
                   );

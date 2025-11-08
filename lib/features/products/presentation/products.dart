@@ -1,5 +1,6 @@
 import 'dart:io';
 import 'package:coffee_pos/features/orderlist/presentation/orderlist.dart';
+import 'package:coffee_pos/features/orderlist/provider/orderlist_provider.dart';
 import 'package:coffee_pos/features/products/data/models/item_model.dart';
 import 'package:coffee_pos/features/products/data/models/order_model.dart';
 import 'package:coffee_pos/features/products/data/provider/cart_notifier.dart';
@@ -186,39 +187,7 @@ class ProductScreen extends ConsumerWidget {
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       GestureDetector(
-                        onTap: () async{
-                          final orders = await orderRepository.getOrder();
-                          final items = await itemRepository.getItem();
-                          if (orders.isEmpty) {
-                            print("No orders yet.");
-                          } else {
-                            for (var order in orders) {
-                              print("Order ID: ${order.id}");
-                              print("Customer Name: ${order.name}");
-                              print("Total Amount: ${order.totalAmount}");
-                              print("Amount Given: ${order.amountGiven}");
-                              print("Change: ${order.change}");
-                              print("Order Type: ${order.orderType}");
-                              print("Payment Method: ${order.paymentMethod}");
-                              print("Status: ${order.orderStatus}");
-                              print("Created At: ${order.createdAt}");
-                              print("----------------------");
-                            }
-                          }
-
-                          if (items.isEmpty) {
-                            print("No items in table.");
-                          } else {
-                            for (var item in items) {
-                              print("Item ID: ${item.id}");
-                              print("Order ID: ${item.orderId}");
-                              print("Product ID: ${item.productId}");
-                              print("Quantity: ${item.quantity}");
-                              print("Subtotal: ${item.subTotal}");
-                              print("------------------------");
-                            }
-                          }
-
+                        onTap: (){
                           Navigator.push(
                             context,
                             MaterialPageRoute(
@@ -538,9 +507,10 @@ class ProductScreen extends ConsumerWidget {
                                                             createdAt: DateTime.now().toIso8601String()
                                                         );
 
-                                                        final orderRepository = ref.read(orderRepositoryProvider);
+                                                        final orderListNotifier = ref.read(orderListNotifierProvider.notifier);
                                                         await orderRepository.addOrder(order, items);
                                                         ref.read(cartNotifierProvider.notifier).clearCart();
+                                                        await orderListNotifier.fetchOrderList();
 
                                                         Get.snackbar(
                                                           "Success", "Order Complete",
