@@ -5,7 +5,6 @@ import 'package:coffee_pos/features/products/data/models/item_model.dart';
 import 'package:coffee_pos/features/products/data/models/order_model.dart';
 import 'package:coffee_pos/features/products/data/provider/cart_notifier.dart';
 import 'package:coffee_pos/features/products/data/provider/product_provider.dart';
-import 'package:coffee_pos/features/products/data/repository/item_repository.dart';
 import 'package:coffee_pos/features/products/data/repository/order_repository.dart';
 import 'package:coffee_pos/features/products/presentation/add_product.dart';
 import 'package:coffee_pos/core/widgets/container_tab.dart';
@@ -42,7 +41,7 @@ class ProductScreen extends ConsumerWidget {
       error: (_, __) => [],
     );
     final orderRepository = OrderRepository();
-    final itemRepository = ItemRepository();
+
 
     return Scaffold(
       appBar: AppBar(
@@ -253,13 +252,13 @@ class ProductScreen extends ConsumerWidget {
                                                       crossAxisAlignment: CrossAxisAlignment.start,
                                                       children: [
                                                         Text(product.name,
-                                                            style: const TextStyle(
+                                                            style: TextStyle(
                                                                 fontWeight: FontWeight.bold, fontSize: 14)),
                                                         Text('₱${product.price}',
-                                                            style: const TextStyle(fontSize: 12, color: Colors.grey)),
+                                                            style: TextStyle(fontSize: 12, color: Colors.grey)),
                                                         Text(
                                                           'Subtotal: ₱${(product.price * quantity).toStringAsFixed(2)}',
-                                                          style: const TextStyle(
+                                                          style: TextStyle(
                                                               fontSize: 12, color: Colors.brown),
                                                         ),
                                                       ],

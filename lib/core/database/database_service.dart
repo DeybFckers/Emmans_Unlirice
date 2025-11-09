@@ -74,6 +74,7 @@ class StreetSideDatabase{
           o.${OrderTable.OrderStatus} as Status,
           o.${OrderTable.OrderCreatedAT} as Date,
           p.${ProductTable.ProductName} as Product_Name,
+          p.${ProductTable.ProductImage} as Product_Image,
           i.${OrderTable.ItemQuantity} as Quantity,
           i.${OrderTable.ItemSubtotal} as SubTotal
           FROM ${OrderTable.OrderTableName} o

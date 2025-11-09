@@ -1,7 +1,10 @@
+import 'dart:io';
+import 'package:get/get.dart';
+import 'package:coffee_pos/core/widgets/custom_button.dart';
 import 'package:coffee_pos/features/orderlist/provider/orderlist_provider.dart';
+import 'package:coffee_pos/features/orderlist/provider/ordertab_provider.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:get/get.dart';
 
 class ListScreen extends ConsumerWidget {
   const ListScreen({super.key});
@@ -23,289 +26,437 @@ class ListScreen extends ConsumerWidget {
         ),
       ),
       body: SafeArea(
-        child: orderlistState.when(
-          data: (groupedOrders) {
-            final filteredOrders = Map.fromEntries(
-              groupedOrders.entries.map((entry) {
-                final inProgressItems = entry.value
-                    .where((item) => item.OrderStatus == 'In Progress')
-                    .toList();
-                return MapEntry(entry.key, inProgressItems);
-              }).where((entry) => entry.value.isNotEmpty), // remove empty lists
-            );
-            if (filteredOrders.isEmpty) {
-              return Center(child: Text('No In Progress Orders'));
-            }
-            final orderIds = filteredOrders.keys.toList();
-            return GridView.builder(
-              itemCount: orderIds.length,
-              shrinkWrap: true,
-              gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
-                crossAxisCount: (screenSize.width ~/ 180).clamp(2, 8),
-                crossAxisSpacing: 6,
-                mainAxisSpacing: 6,
-                childAspectRatio: 0.8,
+        child: Padding(
+          padding: const EdgeInsets.all(10),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Text('Pending Order',
+                style: TextStyle(
+                  fontWeight: FontWeight.bold,
+                  fontSize: 24,
+                  color: Colors.black,
+                ),
               ),
-              itemBuilder: (context, index) {
-                final orderId = orderIds[index];
-                final items = filteredOrders[orderId]!;
-                final firstItem = items.first;
-                return Padding(
-                  padding: const EdgeInsets.all(8.0),
-                  child: GestureDetector(
-                    onTap: () {
-                      showDialog(
-                        context: context,
-                        builder: (_) {
-                          return AlertDialog(
-                            title: Row(
-                              children: [
-                                Expanded(
-                                  child: Text('Order Details')
-                                ),
-                                Text('${firstItem.OrderStatus}',
-                                  style: TextStyle(
-                                    color: Colors.red,
-                                    fontWeight: FontWeight.bold,
-                                    fontSize: 14,
-                                  ),
-                                )
-                              ],
+              SizedBox(height: 10),
+              Row(
+                children: [
+                  Container(
+                    height: screenSize.height * 0.78,
+                    width: screenSize.width * 0.35,
+                    padding: EdgeInsets.all(8),
+                    decoration: BoxDecoration(
+                      color: Color.fromARGB(255, 250, 245, 240),
+                      borderRadius: BorderRadius.circular(12),
+                      boxShadow: [
+                        BoxShadow(
+                          color: Colors.grey.withOpacity(0.3),
+                          blurRadius: 8,
+                          offset: Offset(0, 4),
+                        ),
+                      ],
+                    ),
+                    child: orderlistState.when(
+                      data: (groupedOrders) {
+                        final filteredOrders = Map.fromEntries(
+                          groupedOrders.entries.map((entry) {
+                            final inProgressItems = entry.value
+                                .where((item) => item.OrderStatus == 'In Progress')
+                                .toList();
+                            return MapEntry(entry.key, inProgressItems);
+                          }).where((entry) => entry.value.isNotEmpty),
+                        );
+
+                        if (filteredOrders.isEmpty) {
+                          return Center(
+                            child: Text(
+                              'No Pending Orders',
+                              style: TextStyle(
+                                fontSize: 18,
+                                color: Colors.grey[700],
+                              ),
                             ),
-                            content: SizedBox(
-                              width: screenSize.width * 0.25,
-                              child: Column(
-                                mainAxisSize: MainAxisSize.min,
-                                crossAxisAlignment: CrossAxisAlignment.start,
-                                children: [
-                                  Text('Customer: ${firstItem.CustomerName}',
-                                    style: TextStyle(
-                                        fontWeight: FontWeight.bold
-                                    )
+                          );
+                        }
+                        final orderIds = filteredOrders.keys.toList();
+                        return ListView.builder(
+                          itemCount: orderIds.length,
+                          itemBuilder: (context, index) {
+                            final orderId = orderIds[index];
+                            final items = filteredOrders[orderId]!;
+                            final firstItem = items.first;
+                            final isSelected = ref.watch(selectedOrderProvider) == orderId;
+                            return GestureDetector(
+                              onTap: () {
+                                ref.read(selectedOrderProvider.notifier).state = orderId;
+                              },
+                              child: Padding(
+                                padding: const EdgeInsets.symmetric(vertical: 6),
+                                child: Card(
+                                  color: isSelected
+                                      ? Color.fromARGB(255, 78, 52, 46)
+                                      : Colors.white,
+                                  elevation: 4,
+                                  shape: RoundedRectangleBorder(
+                                    borderRadius: BorderRadius.circular(12),
                                   ),
-                                  Divider(thickness: 1.5),
-                                  ...items.map(
-                                        (item) => Padding(
-                                      padding: const EdgeInsets.symmetric(vertical: 2.0),
-                                      child: Row(
-                                        children: [
-                                          Expanded(
-                                            child: Text(
-                                              'x${item.Quantity} ${item.ProductName}',
-                                              style: TextStyle(
-                                                fontSize: 12,
-                                                color: Colors.grey[700],
+                                  child: Padding(
+                                    padding: const EdgeInsets.all(12),
+                                    child: Column(
+                                      crossAxisAlignment: CrossAxisAlignment.start,
+                                      children: [
+                                        Row(
+                                          children: [
+                                            Expanded(
+                                              child: Text(
+                                                'Order ID: #${firstItem.OrderId}',
+                                                style: TextStyle(
+                                                  fontWeight: FontWeight.bold,
+                                                  fontSize: 20,
+                                                  color: isSelected ? Colors.white : Colors.black,
+                                                ),
                                               ),
                                             ),
-                                          ),
-                                          Text('₱${item.SubTotal}',
-                                            style: TextStyle(
-                                              fontSize: 12,
-                                              color: Colors.grey[700],
+                                            Container(
+                                              padding: EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+                                              decoration: BoxDecoration(
+                                                color: isSelected ? Color.fromARGB(255, 78, 52, 46): firstItem.OrderType == 'Take Out'
+                                                    ? Colors.orange.withOpacity(0.2)
+                                                    : Colors.green.withOpacity(0.2),
+                                                borderRadius: BorderRadius.circular(6),
+                                              ),
+                                              child: Text(
+                                                firstItem.OrderType,
+                                                style: TextStyle(
+                                                  fontSize: 16,
+                                                  fontWeight: FontWeight.bold,
+                                                  color: isSelected ? Colors.white : firstItem.OrderType == 'Take Out'
+                                                      ? Colors.orange[800]
+                                                      : Colors.green[800],
+                                                ),
+                                              ),
+                                            )
+                                          ],
+                                        ),
+                                        SizedBox(height: 8),
+                                        Row(
+                                          children: [
+                                            Expanded(
+                                              child: Text(
+                                                'Customer: ${firstItem.CustomerName}',
+                                                style: TextStyle(
+                                                  fontSize: 16,
+                                                  color: isSelected ? Colors.white : Colors.grey[800],
+                                                ),
+                                              ),
                                             ),
-                                          )
-                                        ],
-                                      ),
+                                            Text(
+                                              '₱${firstItem.TotalAmount}',
+                                              style: TextStyle(
+                                                fontSize: 18,
+                                                fontWeight: FontWeight.bold,
+                                                color: isSelected ? Colors.white : Colors.black,
+                                              ),
+                                            ),
+                                          ],
+                                        ),
+                                      ],
                                     ),
                                   ),
-                                  Divider(thickness: 1.5),
-                                  Row(
-                                    children: [
-                                      Expanded(
-                                          child: Text('Payment Method: ',
-                                            style: TextStyle(
-                                              fontWeight: FontWeight.bold,
+                                ),
+                              ),
+                            );
+                          },
+                        );
+                      },
+                      error: (e, st) => Center(child: Text("Error: $e")),
+                      loading: () => Center(child: CircularProgressIndicator()),
+                    ),
+                  ),
+                  SizedBox(width: 10),
+                  Consumer(
+                    builder: (context, ref, _) {
+                      final selectedOrderId = ref.watch(selectedOrderProvider);
+                      if (selectedOrderId == null) {
+                        return SizedBox.shrink();
+                      }
+                      final selectedItems = orderlistState.asData?.value[selectedOrderId];
+                      if (selectedItems == null || selectedItems.isEmpty) {
+                        return SizedBox.shrink();
+                      }
+                      final firstItem = selectedItems.first;
+                      return Expanded(
+                        child: Container(
+                          height: screenSize.height * 0.78,
+                          padding: EdgeInsets.all(12),
+                          decoration: BoxDecoration(
+                            color: Color.fromARGB(255, 250, 245, 240),
+                            borderRadius: BorderRadius.circular(12),
+                            boxShadow: [
+                              BoxShadow(
+                                color: Colors.grey.withOpacity(0.3),
+                                blurRadius: 8,
+                                offset: Offset(0, 4),
+                              ),
+                            ],
+                          ),
+                            child: Padding(
+                              padding: const EdgeInsets.all(8.0),
+                              child: Column(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: [
+                                  Expanded(
+                                    child: Column(
+                                      children: [
+                                        Row(
+                                          children: [
+                                            Expanded(
+                                              child: Text('Details',
+                                                style: TextStyle(
+                                                    fontWeight: FontWeight.bold,
+                                                    fontSize: 18
+                                                ),
+                                              ),
                                             ),
-                                          )
-                                      ),
-                                      Text('${firstItem.PaymentMethod}')
-                                    ],
+                                            Text('${firstItem.OrderId}',
+                                              style: TextStyle(
+                                                  fontWeight: FontWeight.bold,
+                                                  fontSize: 18
+                                              ),
+                                            )
+                                          ],
+                                        ),
+                                        SizedBox(height: 10),
+                                        Row(
+                                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                          children: [
+                                            Column(
+                                              children: [
+                                                Text('Customer',
+                                                  style: TextStyle(
+                                                      color: Colors.grey[800]
+                                                  ),
+                                                ),
+                                                Text('${firstItem.CustomerName}',
+                                                  style: TextStyle(
+                                                    color: Colors.black,
+                                                    fontWeight: FontWeight.bold,
+                                                  ),
+                                                ),
+                                              ],
+                                            ),
+                                            Column(
+                                              children: [
+                                                Text('Payment',
+                                                  style: TextStyle(
+                                                      color: Colors.grey[800]
+                                                  ),
+                                                ),
+                                                Text('${firstItem.PaymentMethod}',
+                                                  style: TextStyle(
+                                                    color: Colors.black,
+                                                    fontWeight: FontWeight.bold,
+                                                  ),
+                                                ),
+                                              ],
+                                            ),
+                                            Column(
+                                              children: [
+                                                Text('Order Type',
+                                                  style: TextStyle(
+                                                      color: Colors.grey[800]
+                                                  ),
+                                                ),
+                                                Text('${firstItem.OrderType}',
+                                                  style: TextStyle(
+                                                    color: Colors.black,
+                                                    fontWeight: FontWeight.bold,
+                                                  ),
+                                                ),
+                                              ],
+                                            ),
+                                            Column(
+                                              children: [
+                                                Text('Total',
+                                                  style: TextStyle(
+                                                      color: Colors.grey[800]
+                                                  ),
+                                                ),
+                                                Text('${firstItem.TotalAmount}',
+                                                  style: TextStyle(
+                                                    color: Colors.black,
+                                                    fontWeight: FontWeight.bold,
+                                                  ),
+                                                ),
+                                              ],
+                                            ),
+                                          ],
+                                        ),
+                                        SizedBox(height: 10),
+                                        Text('Orders',
+                                          style: TextStyle(
+                                              fontWeight: FontWeight.bold,
+                                              fontSize: 18
+                                          ),
+                                        ),
+                                        SizedBox(height: 10),
+                                        Expanded(
+                                          child: Container(
+                                            child: ListView.separated(
+                                              shrinkWrap: true,
+                                              itemCount: selectedItems.length,
+                                              itemBuilder: (context, index) {
+                                                final item = selectedItems[index];
+                                                return Container(
+                                                  decoration: BoxDecoration(
+                                                    borderRadius: BorderRadius.circular(6),
+                                                    border: Border.all(width: 1, color: Colors.grey),
+                                                  ),
+                                                  child: Padding(
+                                                    padding: const EdgeInsets.all(8.0),
+                                                    child: Row(
+                                                      children: [
+                                                        Image.file(
+                                                          File(item.ProductImage),
+                                                          width: 60,
+                                                          height: 60,
+                                                          fit: BoxFit.cover,
+                                                        ),
+                                                        SizedBox(width: 10),
+                                                        Expanded(
+                                                          child: Text('${item.ProductName}  x${item.Quantity}',
+                                                            style: TextStyle(
+                                                              fontSize: 16,
+                                                              fontWeight: FontWeight.bold,
+                                                            ),
+                                                          ),
+                                                        ),
+                                                        Text('₱${item.SubTotal}',
+                                                          style: TextStyle(
+                                                            fontSize: 16,
+                                                            fontWeight: FontWeight.bold,
+                                                          ),
+                                                        )
+                                                      ],
+                                                    ),
+                                                  ),
+                                                );
+                                              },
+                                              separatorBuilder: (context, index) => SizedBox(height: 10), // space between items
+                                            ),
+                                          ),
+                                        )
+                                      ],
+                                    ),
                                   ),
                                   SizedBox(height: 10),
                                   Row(
                                     children: [
                                       Expanded(
-                                        child: Text('Total: ',
-                                          style: TextStyle(
-                                            fontWeight: FontWeight.bold,
+                                        child: ElevatedButton(
+                                          onPressed: (){
+                                            showDialog(
+                                                context: context,
+                                                builder: (_){
+                                                  return AlertDialog(
+                                                    title: Text('${firstItem.CustomerName} Orders'),
+                                                    content: Text('Are you sure you want to delete this order?'),
+                                                    actions: [
+                                                      TextButton(
+                                                        onPressed: () => Navigator.pop(context),
+                                                        child: Text('Close'),
+                                                      ),
+                                                      ElevatedButton(
+                                                        onPressed: () async {
+                                                          try{
+                                                            await ref.read(orderListNotifierProvider.notifier)
+                                                                .updateOrderStatus(firstItem.OrderId!, 'Refund');
+
+                                                            ref.read(selectedOrderProvider.notifier).state = null;
+
+                                                            Get.snackbar(
+                                                              "Success", "Order delete",
+                                                              snackPosition: SnackPosition.BOTTOM,
+                                                              backgroundColor: Colors.green,
+                                                              colorText: Colors.white,
+                                                            );
+
+                                                            Navigator.pop(context);
+                                                          }catch(e){
+                                                            print('error updating $e');
+                                                          }
+                                                        },
+                                                        child: Text('Confirm',
+                                                          style: TextStyle(
+                                                            color: Colors.white,
+                                                          ),
+                                                        ),
+                                                        style: ElevatedButton.styleFrom(
+                                                          backgroundColor: Color.fromARGB(255, 121, 85, 72),
+                                                        ),
+                                                      )
+                                                    ],
+                                                  );
+                                                }
+                                            );
+                                          },
+                                          style: ElevatedButton.styleFrom(
+                                            padding: EdgeInsets.symmetric(vertical: 18),
+                                            backgroundColor: Colors.white,
+                                            shape: RoundedRectangleBorder(
+                                              borderRadius: BorderRadius.circular(12),
+                                            ),
+                                            elevation: 5,
                                           ),
-                                        )
-                                      ),
-                                      Text('${firstItem.TotalAmount}')
-                                    ],
-                                  ),
-                                ],
-                              ),
-                            ),
-                            actions: [
-                              TextButton(
-                                onPressed: () => Navigator.pop(context),
-                                child: Text('Close'),
-                              ),
-                              ElevatedButton(
-                                onPressed: () async {
-                                  try{
-                                    await ref.read(orderListNotifierProvider.notifier)
-                                        .updateOrderStatus(firstItem.OrderId!, 'Completed');
-
-                                    Get.snackbar(
-                                      "Success", "Order Complete",
-                                      snackPosition: SnackPosition.BOTTOM,
-                                      backgroundColor: Colors.green,
-                                      colorText: Colors.white,
-                                    );
-
-                                    Navigator.pop(context);
-                                  }catch(e){
-                                    print('error updating $e');
-                                  }
-                                },
-                                child: Text('Done',
-                                  style: TextStyle(
-                                    color: Colors.white,
-                                  ),
-                                ),
-                                style: ElevatedButton.styleFrom(
-                                  backgroundColor: Color.fromARGB(255, 121, 85, 72),
-                                ),
-                              )
-                            ],
-                          );
-                        },
-                      );
-                    },
-                      child: Card(
-                        color: Colors.white,
-                        elevation: 6,
-                        shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(12),
-                        ),
-                        child: Padding(
-                          padding: const EdgeInsets.all(8.0),
-                          child: ConstrainedBox(
-                            constraints: BoxConstraints(minHeight: 120),
-                            child: Column(
-                              crossAxisAlignment: CrossAxisAlignment.start,
-                              children: [
-                                Row(
-                                  children: [
-                                    Expanded(
-                                      child: Column(
-                                        crossAxisAlignment: CrossAxisAlignment.start,
-                                        children: [
-                                          Text(
-                                            firstItem.CustomerName,
+                                          child: Text(
+                                            'Refund',
                                             style: TextStyle(
-                                              fontWeight: FontWeight.bold,
-                                              fontSize: 14,
+                                              fontSize: 18,
+                                              color: Colors.red,
+                                              letterSpacing: 1.2,
                                             ),
                                           ),
-                                          Text(
-                                            firstItem.OrderType,
-                                            style: TextStyle(
-                                              fontSize: 12,
-                                              color: firstItem.OrderType == 'Take Out' ? Colors.orange : Colors.green,
-                                              fontWeight: FontWeight.bold,
-                                            ),
-                                          ),
-                                        ],
-                                      ),
-                                    ),
-                                    Text(
-                                      '₱${firstItem.TotalAmount}',
-                                      style: TextStyle(
-                                        fontWeight: FontWeight.bold,
-                                        fontSize: 14,
-                                      ),
-                                    ),
-                                  ],
-                                ),
-                                Divider(thickness: 1.5),
-                                ...items.map((item) => Padding(
-                                  padding: const EdgeInsets.symmetric(vertical: 2.0),
-                                  child: Text(
-                                    'x${item.Quantity} ${item.ProductName} - ₱${item.SubTotal}',
-                                    style: TextStyle(
-                                      fontSize: 12,
-                                      color: Colors.grey[700],
-                                    ),
-                                  ),
-                                )),
-                                Spacer(),
-                                Row(
-                                  children: [
-                                    Expanded(
-                                      child: Text(
-                                        '${firstItem.OrderStatus}',
-                                        style: TextStyle(
-                                          fontWeight: FontWeight.bold,
-                                          color: Colors.red,
                                         ),
                                       ),
-                                    ),
-                                    IconButton(
-                                      onPressed: (){
-                                        showDialog(
-                                          context: context,
-                                          builder: (_){
-                                            return AlertDialog(
-                                              title: Text('${firstItem.CustomerName} Orders'),
-                                              content: Text('Are you sure you want to delete this order?'),
-                                              actions: [
-                                                TextButton(
-                                                  onPressed: () => Navigator.pop(context),
-                                                  child: Text('Close'),
-                                                ),
-                                                ElevatedButton(
-                                                  onPressed: () async {
-                                                    try{
-                                                      await ref.read(orderListNotifierProvider.notifier)
-                                                          .updateOrderStatus(firstItem.OrderId!, 'Refund');
+                                      SizedBox(width: 10),
+                                      Expanded(
+                                        child: CustomButton(
+                                          text: 'Done',
+                                          onPressed: () async {
+                                            try{
+                                              await ref.read(orderListNotifierProvider.notifier)
+                                                  .updateOrderStatus(firstItem.OrderId!, 'Completed');
 
-                                                      Get.snackbar(
-                                                        "Success", "Order delete",
-                                                        snackPosition: SnackPosition.BOTTOM,
-                                                        backgroundColor: Colors.green,
-                                                        colorText: Colors.white,
-                                                      );
+                                              ref.read(selectedOrderProvider.notifier).state = null;
 
-                                                      Navigator.pop(context);
-                                                    }catch(e){
-                                                      print('error updating $e');
-                                                    }
-                                                  },
-                                                  child: Text('Confirm',
-                                                    style: TextStyle(
-                                                      color: Colors.white,
-                                                    ),
-                                                  ),
-                                                  style: ElevatedButton.styleFrom(
-                                                    backgroundColor: Color.fromARGB(255, 121, 85, 72),
-                                                  ),
-                                                )
-                                              ],
-                                            );
-                                          }
-                                        );
-                                      },
-                                      icon: Icon(Icons.delete, color: Colors.red),
-                                    )
-                                  ],
-                                ),
-                              ],
-                            ),
-                          ),
+                                              Get.snackbar(
+                                                "Success", "Order Complete",
+                                                snackPosition: SnackPosition.BOTTOM,
+                                                backgroundColor: Colors.green,
+                                                colorText: Colors.white,
+                                              );
+                                            }catch(e){
+                                              print('error updating $e');
+                                            }
+                                          },
+                                        )
+                                      ),
+                                    ],
+                                  )
+                                ]
+                              ),
+                            )
                         ),
-                      )
-                  ),
-                );
-              },
-            );
-          },
-          loading: () => Center(child: CircularProgressIndicator()),
-          error: (e, st) => Center(child: Text("Error: $e")),
-        ),
+                      );
+                    },
+                  )
+                ],
+              )
+            ],
+          ),
+        )
       ),
     );
   }
 }
+

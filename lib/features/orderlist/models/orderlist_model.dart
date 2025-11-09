@@ -11,6 +11,7 @@ class orderListModel {
   final String PaymentMethod;
   String OrderStatus;
   final String Date;
+  final String ProductImage;
 
   orderListModel ({
     this.OrderId,
@@ -24,7 +25,8 @@ class orderListModel {
     required this.OrderType,
     required this.PaymentMethod,
     required this.OrderStatus,
-    required this.Date
+    required this.Date,
+    required this.ProductImage,
   });
 
   factory orderListModel.fromMap(Map<String, dynamic> map){
@@ -41,6 +43,7 @@ class orderListModel {
       PaymentMethod: map['Payment_Method'] as String,
       OrderStatus: map['Status'] as String,
       Date: map['Date'] as String,
+      ProductImage: map['Product_Image'] as String,
     );
   }
 
