@@ -1,5 +1,6 @@
 import 'package:coffee_pos/features/products/data/models/product_model.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:flutter_riverpod/legacy.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 
 part 'cart_notifier.g.dart';
@@ -60,3 +61,13 @@ double cartTotal(ref){
 
   return total;
 }
+
+final selectedTypeProvider = StateProvider<String?>((ref) => null);
+
+final selectedMethodProvider = StateProvider<String?>((ref) => null);
+
+final isDiscountedProvider = StateProvider<bool>((ref) => false);
+
+final changeProvider = StateProvider<double>((ref) => 0.0);
+
+final cashGivenProvider = StateProvider<String>((ref) => '');

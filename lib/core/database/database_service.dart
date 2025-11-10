@@ -1,3 +1,4 @@
+import 'package:coffee_pos/core/database/analytics_table.dart';
 import 'package:coffee_pos/core/database/order_table.dart';
 import 'package:coffee_pos/core/database/product_table.dart';
 import 'package:path/path.dart';
@@ -42,7 +43,7 @@ class StreetSideDatabase{
         ${OrderTable.OrderTotalAmount} REAL NOT NULL,
         ${OrderTable.OrderAmountGiven} REAL,
         ${OrderTable.OrderChange} REAL,
-        ${OrderTable.OrderType} TEXT CHECK (${OrderTable.OrderType} IN ('Dine In', 'Take Out')) NOT NULL,
+        ${OrderTable.OrderType} TEXT CHECK (${OrderTable.OrderType} IN ('Dine In', 'Take Out', 'Delivery')) NOT NULL,
         ${OrderTable.OrderPayment} TEXT CHECK(${OrderTable.OrderPayment} IN ('Cash', 'Gcash')) NOT NULL,
         ${OrderTable.OrderStatus} TEXT NOT NULL CHECK (${OrderTable.OrderStatus} IN ('In Progress', 'Completed', 'Refund')) DEFAULT 'In Progress',
         ${OrderTable.OrderCreatedAT} TEXT DEFAULT CURRENT_TIMESTAMP
@@ -83,6 +84,75 @@ class StreetSideDatabase{
           JOIN ${ProductTable.ProductTableName} p
             ON i.${OrderTable.ItemProduct} = p.${ProductTable.ProductID};
         ''');
+        // View: Daily sales analytics
+        db.execute('''
+        CREATE VIEW IF NOT EXISTS ${AnalyticsTable.DailySalesTableName} AS
+        SELECT 
+          date(${OrderTable.OrderCreatedAT}) AS Sale_Date,
+          SUM(${OrderTable.OrderTotalAmount}) AS Total_Sales,
+          COUNT(${OrderTable.OrderID}) AS Total_Orders
+        FROM ${OrderTable.OrderTableName}
+        WHERE ${OrderTable.OrderStatus} = 'Completed'
+        GROUP BY date(${OrderTable.OrderCreatedAT})
+        ORDER BY date(${OrderTable.OrderCreatedAT}) DESC;
+        ''');
+        // View: Weekly sales analytics
+        db.execute('''
+        CREATE VIEW IF NOT EXISTS ${AnalyticsTable.WeeklySalesTableName} AS
+        SELECT 
+          strftime('%Y-%W', ${OrderTable.OrderCreatedAT}) AS Week,
+          SUM(${OrderTable.OrderTotalAmount}) AS Total_Sales,
+          COUNT(${OrderTable.OrderID}) AS Total_Orders
+        FROM ${OrderTable.OrderTableName}
+        WHERE ${OrderTable.OrderStatus} = 'Completed'
+        GROUP BY strftime('%Y-%W', ${OrderTable.OrderCreatedAT})
+        ORDER BY Week DESC;
+        ''');
+        // View: Monthly sales analytics
+        db.execute('''
+        CREATE VIEW IF NOT EXISTS ${AnalyticsTable.MontlySalesTableName} AS
+        SELECT 
+          strftime('%Y-%m', ${OrderTable.OrderCreatedAT}) AS Month,
+          SUM(${OrderTable.OrderTotalAmount}) AS Total_Sales,
+          COUNT(${OrderTable.OrderID}) AS Total_Orders
+        FROM ${OrderTable.OrderTableName}
+        WHERE ${OrderTable.OrderStatus} = 'Completed'
+        GROUP BY strftime('%Y-%m', ${OrderTable.OrderCreatedAT})
+        ORDER BY Month DESC;
+        ''');
+        // View: Top selling products
+        db.execute('''
+        CREATE VIEW IF NOT EXISTS ${AnalyticsTable.TopSellingTableName} AS
+        SELECT 
+          p.${ProductTable.ProductName} AS Product_Name,
+          SUM(i.${OrderTable.ItemQuantity}) AS Total_Sold,
+          SUM(i.${OrderTable.ItemSubtotal}) AS Total_Revenue
+        FROM ${OrderTable.ItemTableName} i
+        JOIN ${ProductTable.ProductTableName} p
+          ON i.${OrderTable.ItemProduct} = p.${ProductTable.ProductID}
+        JOIN ${OrderTable.OrderTableName} o
+          ON i.${OrderTable.ItemOrder} = o.${OrderTable.OrderID}
+        WHERE o.${OrderTable.OrderStatus} = 'Completed'
+        GROUP BY i.${OrderTable.ItemProduct}
+        ORDER BY Total_Sold DESC;
+        ''');
+        // View: Revenue by category
+        db.execute('''
+        CREATE VIEW IF NOT EXISTS ${AnalyticsTable.CategoryRevenueTableName} AS
+        SELECT 
+          p.${ProductTable.ProductCategory} AS Category,
+          SUM(i.${OrderTable.ItemSubtotal}) AS Total_Revenue,
+          COUNT(DISTINCT i.${OrderTable.ItemOrder}) AS Total_Orders
+        FROM ${OrderTable.ItemTableName} i
+        JOIN ${ProductTable.ProductTableName} p
+          ON i.${OrderTable.ItemProduct} = p.${ProductTable.ProductID}
+        JOIN ${OrderTable.OrderTableName} o
+          ON i.${OrderTable.ItemOrder} = o.${OrderTable.OrderID}
+        WHERE o.${OrderTable.OrderStatus} = 'Completed'
+        GROUP BY p.${ProductTable.ProductCategory}
+        ORDER BY Total_Revenue DESC;
+        ''');
+
       }
     );
     return database;

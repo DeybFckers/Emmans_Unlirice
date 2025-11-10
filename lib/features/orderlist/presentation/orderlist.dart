@@ -120,8 +120,12 @@ class ListScreen extends ConsumerWidget {
                                             Container(
                                               padding: EdgeInsets.symmetric(horizontal: 8, vertical: 4),
                                               decoration: BoxDecoration(
-                                                color: isSelected ? Color.fromARGB(255, 78, 52, 46): firstItem.OrderType == 'Take Out'
+                                                color: isSelected
+                                                    ? Color.fromARGB(255, 78, 52, 46)
+                                                    : firstItem.OrderType == 'Take Out'
                                                     ? Colors.orange.withOpacity(0.2)
+                                                    : firstItem.OrderType == 'Delivery'
+                                                    ? Colors.red.withOpacity(0.2)
                                                     : Colors.green.withOpacity(0.2),
                                                 borderRadius: BorderRadius.circular(6),
                                               ),
@@ -130,12 +134,16 @@ class ListScreen extends ConsumerWidget {
                                                 style: TextStyle(
                                                   fontSize: 16,
                                                   fontWeight: FontWeight.bold,
-                                                  color: isSelected ? Colors.white : firstItem.OrderType == 'Take Out'
+                                                  color: isSelected
+                                                      ? Colors.white
+                                                      : firstItem.OrderType == 'Take Out'
                                                       ? Colors.orange[800]
+                                                      : firstItem.OrderType == 'Delivery'
+                                                      ? Colors.red[800]
                                                       : Colors.green[800],
                                                 ),
                                               ),
-                                            )
+                                            ),
                                           ],
                                         ),
                                         SizedBox(height: 8),
