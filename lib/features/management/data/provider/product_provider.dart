@@ -1,6 +1,6 @@
 // Import your data model and repository
-import 'package:coffee_pos/features/products/data/models/product_model.dart';
-import 'package:coffee_pos/features/products/data/repository/product_repository.dart';
+import 'package:coffee_pos/features/management/data/models/product_model.dart';
+import 'package:coffee_pos/features/management/data/repository/product_repository.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_riverpod/legacy.dart'; // optional, may not be needed depending on setup
 
@@ -42,6 +42,31 @@ class ProductNotifier extends StateNotifier<AsyncValue<List<ProductModel>>> {
     await _productRepository.addProduct(product);
 
     // Re-fetch all products to reflect the new addition in the UI
+    await fetchProducts();
+  }
+
+  Future<void> editName(int id, String newName) async {
+    await _productRepository.editName(id, newName);
+    await fetchProducts();
+  }
+
+  Future<void> editCategory(int id, String newCategory) async {
+    await _productRepository.editCategory(id, newCategory);
+    await fetchProducts();
+  }
+
+  Future<void> editPrice(int id, double newPrice) async {
+    await _productRepository.editPrice(id, newPrice);
+    await fetchProducts();
+  }
+
+  Future<void> editImage(int id, String fileName) async{
+    await _productRepository.editImage(id, fileName);
+    await fetchProducts();
+  }
+
+  Future<void> deleteProduct(int id) async{
+    await _productRepository.deleteProduct(id);
     await fetchProducts();
   }
 }

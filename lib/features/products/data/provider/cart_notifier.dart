@@ -1,4 +1,4 @@
-import 'package:coffee_pos/features/products/data/models/product_model.dart';
+import 'package:coffee_pos/features/management/data/models/product_model.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_riverpod/legacy.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';

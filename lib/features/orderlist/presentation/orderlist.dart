@@ -1,4 +1,5 @@
 import 'dart:io';
+import 'package:coffee_pos/features/management/data/provider/management_provider.dart';
 import 'package:coffee_pos/features/orderlist/data/provider/orderlist_provider.dart';
 import 'package:coffee_pos/features/orderlist/data/provider/ordertab_provider.dart';
 import 'package:get/get.dart';
@@ -159,7 +160,7 @@ class ListScreen extends ConsumerWidget {
                                               ),
                                             ),
                                             Text(
-                                              '₱${firstItem.TotalAmount}',
+                                              '₱${firstItem.TotalAmount.toStringAsFixed(2)}',
                                               style: TextStyle(
                                                 fontSize: 18,
                                                 fontWeight: FontWeight.bold,
@@ -290,7 +291,7 @@ class ListScreen extends ConsumerWidget {
                                                       color: Colors.grey[800]
                                                   ),
                                                 ),
-                                                Text('${firstItem.TotalAmount}',
+                                                Text('${firstItem.TotalAmount.toStringAsFixed(2)}',
                                                   style: TextStyle(
                                                     color: Colors.black,
                                                     fontWeight: FontWeight.bold,
@@ -368,7 +369,7 @@ class ListScreen extends ConsumerWidget {
                                                 builder: (_){
                                                   return AlertDialog(
                                                     title: Text('${firstItem.CustomerName} Orders'),
-                                                    content: Text('Are you sure you want to delete this order?'),
+                                                    content: Text('Are you sure you want to Refund this order?'),
                                                     actions: [
                                                       TextButton(
                                                         onPressed: () => Navigator.pop(context),
@@ -381,14 +382,14 @@ class ListScreen extends ConsumerWidget {
                                                                 .updateOrderStatus(firstItem.OrderId!, 'Refund');
 
                                                             ref.read(selectedOrderProvider.notifier).state = null;
-
+                                                            ref.read(managementNotifierProvider.notifier).fetchAll();
                                                             Get.snackbar(
                                                               "Success", "Order delete",
                                                               snackPosition: SnackPosition.BOTTOM,
                                                               backgroundColor: Colors.green,
                                                               colorText: Colors.white,
                                                             );
-
+                                                            ref.read(managementNotifierProvider.notifier).fetchAll();
                                                             Navigator.pop(context);
                                                           }catch(e){
                                                             print('error updating $e');
@@ -436,7 +437,7 @@ class ListScreen extends ConsumerWidget {
                                                   .updateOrderStatus(firstItem.OrderId!, 'Completed');
 
                                               ref.read(selectedOrderProvider.notifier).state = null;
-
+                                              ref.read(managementNotifierProvider.notifier).fetchAll();
                                               Get.snackbar(
                                                 "Success", "Order Complete",
                                                 snackPosition: SnackPosition.BOTTOM,

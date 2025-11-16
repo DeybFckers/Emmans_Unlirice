@@ -3,12 +3,11 @@ import 'package:flutter/material.dart';
 import 'package:coffee_pos/core/widgets/customTableContainer.dart';
 import 'package:intl/intl.dart';
 
-
 Widget buildCustomerTable(List<OrderModel> orders, Size screenSize) {
   return CustomTableContainer(
     height: screenSize.height * 0.67,
     columns: const [
-      DataColumn(label: Text('Order ID',
+      DataColumn(label: Text('ID',
           style: TextStyle(
               fontWeight: FontWeight.bold,
               color: Colors.white,
@@ -24,7 +23,7 @@ Widget buildCustomerTable(List<OrderModel> orders, Size screenSize) {
           )
         )
       ),
-      DataColumn(label: Text('Payment Method',
+      DataColumn(label: Text('Payment',
           style: TextStyle(
               fontWeight: FontWeight.bold,
               color: Colors.white,
@@ -32,7 +31,7 @@ Widget buildCustomerTable(List<OrderModel> orders, Size screenSize) {
           )
         )
       ),
-      DataColumn(label: Text('Order Type',
+      DataColumn(label: Text('Type',
           style: TextStyle(
               fontWeight: FontWeight.bold,
               color: Colors.white,
@@ -40,7 +39,15 @@ Widget buildCustomerTable(List<OrderModel> orders, Size screenSize) {
           )
         )
       ),
-      DataColumn(label: Text('Total Amount',
+      DataColumn(label: Text('Total',
+          style: TextStyle(
+              fontWeight: FontWeight.bold,
+              color: Colors.white,
+              fontSize: 15
+          )
+        )
+      ),
+      DataColumn(label: Text('Cash',
           style: TextStyle(
               fontWeight: FontWeight.bold,
               color: Colors.white,
@@ -72,6 +79,14 @@ Widget buildCustomerTable(List<OrderModel> orders, Size screenSize) {
           )
         )
       ),
+      DataColumn(label: Text('Actions',
+          style: TextStyle(
+              fontWeight: FontWeight.bold,
+              color: Colors.white,
+              fontSize: 15
+          )
+        )
+      ),
     ],
     rows: orders.map((o) {
       return DataRow(cells: [
@@ -91,11 +106,15 @@ Widget buildCustomerTable(List<OrderModel> orders, Size screenSize) {
           style: TextStyle(fontSize: 15),
           )
         ),
-        DataCell(Text(o.totalAmount.toString(),
+        DataCell(Text(o.totalAmount.toStringAsFixed(2),
           style: TextStyle(fontSize: 15),
           )
         ),
-        DataCell(Text(o.change.toString()
+        DataCell(Text(o.amountGiven.toStringAsFixed(2),
+          style: TextStyle(fontSize: 15),
+          )
+        ),
+        DataCell(Text(o.change.toStringAsFixed(2)
           )
         ),
         DataCell(Text(o.orderStatus ?? '',
@@ -108,6 +127,27 @@ Widget buildCustomerTable(List<OrderModel> orders, Size screenSize) {
             style: const TextStyle(fontSize: 15),
           ),
         ),
+        DataCell(Row(
+          children: [
+            IconButton(
+              onPressed: (){
+
+              },
+              icon: Icon(Icons.edit,
+                  color: Colors.green
+              )
+            ),
+            IconButton(
+              onPressed: (){
+
+              },
+              icon: Icon(Icons.delete,
+                color: Colors.red,
+              )
+            )
+            ],
+          )
+        )
       ]);
     }).toList(),
   );

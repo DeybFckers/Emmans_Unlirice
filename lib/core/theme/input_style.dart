@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 
 InputDecoration customInputDecoration(
     String label,
-    IconData icon, {
+    IconData? icon, {
       Widget? suffixIcon,
     }) {
   return InputDecoration(

@@ -1,12 +1,12 @@
 import 'dart:io';
+import 'package:coffee_pos/features/management/data/provider/management_provider.dart';
 import 'package:coffee_pos/features/orderlist/data/provider/orderlist_provider.dart';
 import 'package:coffee_pos/features/orderlist/presentation/orderlist.dart';
 import 'package:coffee_pos/features/products/data/models/item_model.dart';
 import 'package:coffee_pos/features/products/data/models/order_model.dart';
 import 'package:coffee_pos/features/products/data/provider/cart_notifier.dart';
-import 'package:coffee_pos/features/products/data/provider/product_provider.dart';
+import 'package:coffee_pos/features/management/data/provider/product_provider.dart';
 import 'package:coffee_pos/features/products/data/repository/order_repository.dart';
-import 'package:coffee_pos/features/products/presentation/add_product.dart';
 import 'package:coffee_pos/core/widgets/container_tab.dart';
 import 'package:coffee_pos/core/widgets/custom_button.dart';
 import 'package:coffee_pos/core/widgets/my_drawer.dart';
@@ -66,28 +66,12 @@ class _ProductScreenState extends ConsumerState<ProductScreen> {
     return Scaffold(
       appBar: AppBar(
         backgroundColor: Color.fromARGB(255, 78, 52, 46),
-        title: Row(
-          children: [
-            Expanded(
-              child: Text(
-                'Products',
-                style: TextStyle(
-                  color: Colors.white,
-                  fontWeight: FontWeight.bold,
-                ),
-              ),
-            ),
-            IconButton(
-              icon: Icon(Icons.add),
-              color: Colors.white,
-              onPressed: () {
-                showDialog(
-                  context: context,
-                  builder: (context) => AddProduct(),
-                );
-              },
-            )
-          ],
+        title: Text(
+          'Products',
+          style: TextStyle(
+            color: Colors.white,
+            fontWeight: FontWeight.bold,
+          ),
         ),
       ),
       drawer: MyDrawer(),
@@ -578,6 +562,7 @@ class _ProductScreenState extends ConsumerState<ProductScreen> {
                                       ref.read(selectedMethodProvider.notifier).state = null;
                                       ref.read(selectedTypeProvider.notifier).state = null;
                                       await orderListNotifier.fetchOrderList();
+                                      ref.read(managementNotifierProvider.notifier).fetchAll();
 
                                       Get.snackbar(
                                         "Success", "Order added to list",

@@ -1,12 +1,13 @@
+import 'package:coffee_pos/features/orderlist/data/models/orderlist_model.dart';
 import 'package:flutter/material.dart';
 import 'package:coffee_pos/core/widgets/customTableContainer.dart';
-import 'package:coffee_pos/features/products/data/models/product_model.dart';
 
-Widget buildProductsTable(List<ProductModel> products, Size screenSize) {
+
+Widget buildOrderListTable(List<orderListModel> items, Size screenSize) {
   return CustomTableContainer(
     height: screenSize.height * 0.67,
     columns: const [
-      DataColumn(label: Text('ID',
+      DataColumn(label: Text('Customer',
           style: TextStyle(
               fontWeight: FontWeight.bold,
               color: Colors.white,
@@ -14,7 +15,7 @@ Widget buildProductsTable(List<ProductModel> products, Size screenSize) {
           )
         )
       ),
-      DataColumn(label: Text('Name',
+      DataColumn(label: Text('Product',
           style: TextStyle(
               fontWeight: FontWeight.bold,
               color: Colors.white,
@@ -22,7 +23,7 @@ Widget buildProductsTable(List<ProductModel> products, Size screenSize) {
           )
         )
       ),
-      DataColumn(label: Text('Category',
+      DataColumn(label: Text('Quantity',
           style: TextStyle(
               fontWeight: FontWeight.bold,
               color: Colors.white,
@@ -30,7 +31,15 @@ Widget buildProductsTable(List<ProductModel> products, Size screenSize) {
           )
         )
       ),
-      DataColumn(label: Text('Price',
+      DataColumn(label: Text('Sub Total',
+          style: TextStyle(
+              fontWeight: FontWeight.bold,
+              color: Colors.white,
+              fontSize: 15
+          )
+        )
+      ),
+      DataColumn(label: Text('Actions',
           style: TextStyle(
               fontWeight: FontWeight.bold,
               color: Colors.white,
@@ -39,24 +48,45 @@ Widget buildProductsTable(List<ProductModel> products, Size screenSize) {
         )
       ),
     ],
-    rows: products.map((p) {
+    rows: items.map((o) {
       return DataRow(cells: [
-        DataCell(Text(p.id.toString(),
+        DataCell(Text(o.CustomerName,
           style: TextStyle(fontSize: 15),
           )
         ),
-        DataCell(Text(p.name,
+        DataCell(Text(o.ProductName,
           style: TextStyle(fontSize: 15),
           )
         ),
-        DataCell(Text(p.category,
+        DataCell(Text(o.Quantity.toString(),
           style: TextStyle(fontSize: 15),
           )
         ),
-        DataCell(Text(p.price.toString(),
+        DataCell(Text(o.SubTotal.toString(),
           style: TextStyle(fontSize: 15),
           )
         ),
+        DataCell(Row(
+          children: [
+            IconButton(
+                onPressed: (){
+
+                },
+                icon: Icon(Icons.edit,
+                    color: Colors.green
+                )
+            ),
+            IconButton(
+                onPressed: (){
+
+                },
+                icon: Icon(Icons.delete,
+                  color: Colors.red,
+                )
+            )
+          ],
+        )
+        )
       ]);
     }).toList(),
   );

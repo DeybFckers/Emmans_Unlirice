@@ -1,10 +1,10 @@
 import 'package:coffee_pos/core/widgets/container_tab.dart';
 import 'package:coffee_pos/core/widgets/my_drawer.dart';
-import 'package:coffee_pos/core/widgets/tablecheck.dart';
 import 'package:coffee_pos/features/management/data/provider/management_provider.dart';
-import 'package:coffee_pos/features/management/presentation/customer_management.dart';
-import 'package:coffee_pos/features/management/presentation/order_management.dart';
-import 'package:coffee_pos/features/management/presentation/product_management.dart';
+import 'package:coffee_pos/features/management/presentation/screen/customer_management.dart';
+import 'package:coffee_pos/features/management/presentation/screen/order_management.dart';
+import 'package:coffee_pos/features/management/presentation/screen/product_management.dart';
+import 'package:coffee_pos/features/management/presentation/widgets/add_product.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
@@ -32,7 +32,16 @@ class ManageScreen extends ConsumerWidget {
                 ),
               ),
             ),
-            TableCheck()
+            IconButton(
+              icon: Icon(Icons.add),
+              color: Colors.white,
+              onPressed: () {
+                showDialog(
+                  context: context,
+                  builder: (context) => AddProduct(),
+                );
+              },
+            )
           ],
         ),
       ),
@@ -44,10 +53,10 @@ class ManageScreen extends ConsumerWidget {
             children: [
               TextFormField(
                 controller: searchController,
-                style: const TextStyle(color: Colors.black),
+                style: TextStyle(color: Colors.black),
                 decoration: InputDecoration(
                   hintText: 'Search',
-                  hintStyle: const TextStyle(color: Colors.grey),
+                  hintStyle: TextStyle(color: Colors.grey),
                   filled: true,
                   fillColor: Colors.white,
                   border: OutlineInputBorder(
@@ -86,7 +95,7 @@ class ManageScreen extends ConsumerWidget {
                 child: manageTab.when(
                   data: (data) {
                     if (selectedTab == 0) {
-                      return buildProductsTable(data.products, screenSize);
+                      return buildProductsTable(context, ref, data.products, screenSize);
                     } else if (selectedTab == 1) {
                       return buildCustomerTable(data.orders, screenSize);
                     } else {

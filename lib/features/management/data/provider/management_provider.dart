@@ -1,6 +1,6 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:coffee_pos/features/management/data/repository/management_repository.dart';
-import 'package:coffee_pos/features/products/data/models/product_model.dart';
+import 'package:coffee_pos/features/management/data/models/product_model.dart';
 import 'package:coffee_pos/features/products/data/models/order_model.dart';
 import 'package:coffee_pos/features/orderlist/data/models/orderlist_model.dart';
 import 'package:flutter_riverpod/legacy.dart';
@@ -34,7 +34,9 @@ class ManagementNotifier extends StateNotifier<
   }
 }
 
-final managementRepositoryProvider = Provider((ref) => ManagementRepository());
+final managementRepositoryProvider = Provider<ManagementRepository>((ref) {
+  return ManagementRepository();
+});
 
 final managementNotifierProvider = StateNotifierProvider<ManagementNotifier,
     AsyncValue<({
