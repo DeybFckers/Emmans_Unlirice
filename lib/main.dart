@@ -1,4 +1,4 @@
-import 'package:coffee_pos/features/analytics/presentation/analytics.dart';
+import 'package:coffee_pos/features/analytics/presentation/screen/analytics.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:get/get.dart';

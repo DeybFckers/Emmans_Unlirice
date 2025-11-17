@@ -44,6 +44,12 @@ dependencies:
   path_provider: ^2.1.5
   image: ^4.5.4
   intl: ^0.20.2
+  fl_chart: ^1.1.1
+
+  # remove the override block entirely, OR
+  # if you must keep an override, use a newer version:
+dependency_overrides:
+  vector_math: ^2.2.0
 
 dev_dependencies:
   flutter_test:

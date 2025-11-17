@@ -124,6 +124,11 @@ Widget buildOrderListTable(BuildContext context, WidgetRef ref, List<orderListMo
                       if (isDiscounted) newTotal *= 0.8;
 
                       await orderNotifier.updateOrderTotal(o.OrderId!, newTotal);
+
+                      if (orderItems.first.PaymentMethod == 'Gcash') {
+                        final customerNotifier = ref.read(customerNotifierProvider.notifier);
+                        await customerNotifier.updateCash(o.OrderId!, newTotal);
+                      }
                     }
 
                     ref.read(managementNotifierProvider.notifier).fetchAll();
@@ -178,6 +183,15 @@ Widget buildOrderListTable(BuildContext context, WidgetRef ref, List<orderListMo
                             final amountGiven = orderItems?.first.AmountGiven ?? 0;
                             final newChange = amountGiven - newTotal;
                             await customerNotifier.updateChange(o.OrderId!, newChange);
+
+                            if (orderItems?.first.PaymentMethod == 'Gcash') {
+                              final customerNotifier = ref.read(customerNotifierProvider.notifier);
+                              await customerNotifier.updateCash(o.OrderId!, newTotal);
+                            } else {
+                              final amountGiven = orderItems?.first.AmountGiven ?? 0;
+                              final newChange = amountGiven - newTotal;
+                              await customerNotifier.updateChange(o.OrderId!, newChange);
+                            }
                           }
 
                           ref.read(managementNotifierProvider.notifier).fetchAll();
