@@ -1,4 +1,5 @@
 import 'dart:io';
+import 'package:coffee_pos/core/theme/snackbar.dart';
 import 'package:coffee_pos/features/management/data/provider/management_provider.dart';
 import 'package:coffee_pos/features/management/data/provider/orderlist_provider.dart';
 import 'package:coffee_pos/features/orderlist/presentation/orderlist.dart';
@@ -514,35 +515,32 @@ class _ProductScreenState extends ConsumerState<ProductScreen> {
                                       final cashGiven = double.tryParse(cashController.text) ?? 0.0;
 
                                       if (selectedPaymentMethod == 'Cash' && cashGiven < discountedTotal) {
-                                        Get.snackbar(
-                                          "Error",
-                                          "Insufficient Funds",
-                                          snackPosition: SnackPosition.BOTTOM,
-                                          backgroundColor: Colors.red,
-                                          colorText: Colors.white,
-                                        );
+                                        showCustomSnackBar(
+                                                            context,
+                                                            message: "Insufficient funds",
+                                                            isSuccess: false,
+                                                            title: "Error!",
+                                                            );
                                         return;
                                       }
 
                                       if (selectedPaymentMethod == null) {
-                                        Get.snackbar(
-                                          "Error",
-                                          "Please Select Payment Method",
-                                          snackPosition: SnackPosition.BOTTOM,
-                                          backgroundColor: Colors.red,
-                                          colorText: Colors.white,
-                                        );
+                                        showCustomSnackBar(
+                                                            context,
+                                                            message: "Please select Payment Method",
+                                                            isSuccess: false,
+                                                            title: "Error!",
+                                                            );
                                         return;
                                       }
 
                                       if (selectedOrderType == null) {
-                                        Get.snackbar(
-                                          "Error",
-                                          "Please Select Order Type",
-                                          snackPosition: SnackPosition.BOTTOM,
-                                          backgroundColor: Colors.red,
-                                          colorText: Colors.white,
-                                        );
+                                        showCustomSnackBar(
+                                                            context,
+                                                            message: "Please select Order type.",
+                                                            isSuccess: false,
+                                                            title: "Error!",
+                                                            );
                                         return;
                                       }
 
@@ -577,13 +575,12 @@ class _ProductScreenState extends ConsumerState<ProductScreen> {
                                       await orderListNotifier.fetchOrderList();
                                       ref.read(managementNotifierProvider.notifier).fetchAll();
 
-                                      Get.snackbar(
-                                        "Success",
-                                        "Order added to list",
-                                        snackPosition: SnackPosition.BOTTOM,
-                                        backgroundColor: Colors.green,
-                                        colorText: Colors.white,
-                                      );
+                                      showCustomSnackBar(
+                                                            context,
+                                                            message: "Order Added to List",
+                                                            isSuccess: true,
+                                                            title: "Success!",
+                                                            );
                                     }
                                   },
                                 ),

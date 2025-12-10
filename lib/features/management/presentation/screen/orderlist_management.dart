@@ -1,3 +1,4 @@
+import 'package:coffee_pos/core/theme/snackbar.dart';
 import 'package:coffee_pos/core/widgets/edit_button.dart';
 import 'package:coffee_pos/core/widgets/edit_dialog.dart';
 import 'package:coffee_pos/features/management/data/provider/customer_provider.dart';
@@ -133,13 +134,12 @@ Widget buildOrderListTable(BuildContext context, WidgetRef ref, List<orderListMo
 
                     ref.read(managementNotifierProvider.notifier).fetchAll();
 
-                    Get.snackbar(
-                        "Success",
-                        "Product Updated!",
-                        snackPosition: SnackPosition.BOTTOM,
-                        backgroundColor: Colors.green,
-                        colorText: Colors.white,
-                      );
+                    showCustomSnackBar(
+                        context,
+                        message: "Order Updated!",
+                        isSuccess: true,
+                        title: "Success!",
+                    );
                   },
                 );
               },
@@ -195,13 +195,11 @@ Widget buildOrderListTable(BuildContext context, WidgetRef ref, List<orderListMo
                           }
 
                           ref.read(managementNotifierProvider.notifier).fetchAll();
-
-                          Get.snackbar(
-                              "Success",
-                              "Product Deleted, Total and Change Updated!",
-                              snackPosition: SnackPosition.BOTTOM,
-                              backgroundColor: Colors.green,
-                              colorText: Colors.white,
+                            showCustomSnackBar(
+                                context,
+                                message: "Product Deleted, Total and Change Updated!",
+                                isSuccess: true,
+                                title: "Success!",
                             );
                         },
                       ),

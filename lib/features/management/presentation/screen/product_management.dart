@@ -1,4 +1,5 @@
 import 'dart:io';
+import 'package:coffee_pos/core/theme/snackbar.dart';
 import 'package:coffee_pos/core/widgets/edit_button.dart';
 import 'package:coffee_pos/core/widgets/edit_dialog.dart';
 import 'package:coffee_pos/features/management/data/provider/management_provider.dart';
@@ -110,12 +111,13 @@ Widget buildProductsTable(BuildContext context, WidgetRef ref, List<ProductModel
                                 ref.read(productNotifierProvider.notifier).editName(p.id!, nameController.text);
                                 ref.read(productNotifierProvider.notifier).fetchProducts();
                                 ref.read(managementNotifierProvider.notifier).fetchAll();
-                                Get.snackbar(
-                                    "Success", "Product name updated!",
-                                    snackPosition: SnackPosition.BOTTOM,
-                                    backgroundColor: Colors.green,
-                                    colorText: Colors.white,
-                                  );
+                                                             
+                                showCustomSnackBar(
+                                context,
+                                message: "Product Name Updated!",
+                                isSuccess: true,
+                                title: "Success!",
+                                );
                               },
                             );
                           }
@@ -139,12 +141,12 @@ Widget buildProductsTable(BuildContext context, WidgetRef ref, List<ProductModel
                                 ref.read(productNotifierProvider.notifier).editPrice(p.id!, priceChange);
                                 ref.read(productNotifierProvider.notifier).fetchProducts();
                                 ref.read(managementNotifierProvider.notifier).fetchAll();
-                                Get.snackbar(
-                                    "Success", "Product price updated!",
-                                    snackPosition: SnackPosition.BOTTOM,
-                                    backgroundColor: Colors.green,
-                                    colorText: Colors.white,
-                                  );
+                                showCustomSnackBar(
+                                context,
+                                message: "Product Price Updated!",
+                                isSuccess: true,
+                                title: "Success!",
+                                );
                               },
                             );
                           }
@@ -167,11 +169,11 @@ Widget buildProductsTable(BuildContext context, WidgetRef ref, List<ProductModel
                               ref.read(productNotifierProvider.notifier).editCategory(p.id!, selected);
                               ref.read(productNotifierProvider.notifier).fetchProducts();
                               ref.read(managementNotifierProvider.notifier).fetchAll();
-                              Get.snackbar(
-                                  "Success", "Product category updated!",
-                                  snackPosition: SnackPosition.BOTTOM,
-                                  backgroundColor: Colors.green,
-                                  colorText: Colors.white,
+                                showCustomSnackBar(
+                                context,
+                                message: "Product Category Updated!",
+                                isSuccess: true,
+                                title: "Success!",
                                 );
                             }
                           }
@@ -200,13 +202,12 @@ Widget buildProductsTable(BuildContext context, WidgetRef ref, List<ProductModel
                                   ref.read(productNotifierProvider.notifier).editImage(p.id!, path);
                                   ref.read(productNotifierProvider.notifier).fetchProducts();
                                   ref.read(managementNotifierProvider.notifier).fetchAll();
-                                  Get.snackbar(
-                                      "Success",
-                                      "Product image updated!",
-                                      snackPosition: SnackPosition.BOTTOM,
-                                      backgroundColor: Colors.green,
-                                      colorText: Colors.white,
-                                    );
+                                  showCustomSnackBar(
+                                context,
+                                message: "Product Image Updated!",
+                                isSuccess: true,
+                                title: "Success!",
+                                );
                                 }
                               },
                             );
@@ -245,12 +246,12 @@ Widget buildProductsTable(BuildContext context, WidgetRef ref, List<ProductModel
                           ref.read(productNotifierProvider.notifier).deleteProduct(p.id);
                           ref.read(productNotifierProvider.notifier).fetchProducts();
                           ref.read(managementNotifierProvider.notifier).fetchAll();
-                          Get.snackbar(
-                              "Success", "Record Delete Successfully",
-                              snackPosition: SnackPosition.BOTTOM,
-                              backgroundColor: Colors.green,
-                              colorText: Colors.white,
-                            );
+                          showCustomSnackBar(
+                                context,
+                                message: "Product Remove Successfully!",
+                                isSuccess: true,
+                                title: "Success!",
+                                );
                         }
                       )
                     ]

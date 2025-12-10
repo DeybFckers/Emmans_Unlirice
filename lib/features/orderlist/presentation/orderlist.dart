@@ -1,4 +1,5 @@
 import 'dart:io';
+import 'package:coffee_pos/core/theme/snackbar.dart';
 import 'package:coffee_pos/features/management/data/provider/management_provider.dart';
 import 'package:coffee_pos/features/management/data/provider/orderlist_provider.dart';
 import 'package:coffee_pos/features/orderlist/provider/ordertab_provider.dart';
@@ -398,13 +399,13 @@ class ListScreen extends ConsumerWidget {
 
                                                             ref.read(selectedOrderProvider.notifier).state = null;
                                                             ref.read(managementNotifierProvider.notifier).fetchAll();
-                                                            Get.snackbar(
-                                                                "Success",
-                                                                "Order Refunded Successfully",
-                                                                snackPosition: SnackPosition.BOTTOM,
-                                                                backgroundColor: Colors.green,
-                                                                colorText: Colors.white,
-                                                              );
+
+                                                            showCustomSnackBar(
+                                                            context,
+                                                            message: "Order Refunded Successfully",
+                                                            isSuccess: true,
+                                                            title: "Success!",
+                                                            );
                                                             ref.read(managementNotifierProvider.notifier).fetchAll();
                                                             Navigator.pop(context);
                                                           }catch(e){
@@ -454,13 +455,12 @@ class ListScreen extends ConsumerWidget {
 
                                               ref.read(selectedOrderProvider.notifier).state = null;
                                               ref.read(managementNotifierProvider.notifier).fetchAll();
-                                              Get.snackbar(
-                                                "Success",
-                                                "Order Done",
-                                                snackPosition: SnackPosition.BOTTOM,
-                                                backgroundColor: Colors.green,
-                                                colorText: Colors.white,
-                                              );
+                                              showCustomSnackBar(
+                                                            context,
+                                                            message: "Order Done",
+                                                            isSuccess: true,
+                                                            title: "Success!",
+                                                            );
                                             }catch(e){
                                               print('error updating $e');
                                             }

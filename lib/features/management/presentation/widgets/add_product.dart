@@ -1,3 +1,4 @@
+import 'package:coffee_pos/core/theme/snackbar.dart';
 import 'package:coffee_pos/features/management/data/provider/management_provider.dart';
 import 'package:coffee_pos/features/management/data/provider/product_provider.dart';
 import 'package:coffee_pos/features/management/data/models/product_model.dart';
@@ -142,15 +143,13 @@ class _AddProductState extends ConsumerState<AddProduct> {
               await ref.read(productNotifierProvider.notifier).fetchProducts();
               ref.read(managementNotifierProvider.notifier).fetchAll();
 
-              Get.snackbar(
-                  "Success",
-                  "Product Added successfully",
-                  snackPosition: SnackPosition.BOTTOM,
-                  backgroundColor: Colors.green,
-                  colorText: Colors.white,
-                );
-
               Navigator.pop(context);
+              showCustomSnackBar(
+                context,
+                message: "Product Added Successfully",
+                isSuccess: true,
+                title: "Success!",
+              );
             }
           },
           child: const Text(
