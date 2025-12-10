@@ -133,15 +133,13 @@ Widget buildOrderListTable(BuildContext context, WidgetRef ref, List<orderListMo
 
                     ref.read(managementNotifierProvider.notifier).fetchAll();
 
-                    if(context.mounted){
-                      Get.snackbar(
+                    Get.snackbar(
                         "Success",
                         "Product Updated!",
                         snackPosition: SnackPosition.BOTTOM,
                         backgroundColor: Colors.green,
                         colorText: Colors.white,
                       );
-                    }
                   },
                 );
               },
@@ -198,15 +196,13 @@ Widget buildOrderListTable(BuildContext context, WidgetRef ref, List<orderListMo
 
                           ref.read(managementNotifierProvider.notifier).fetchAll();
 
-                          if(context.mounted){
-                            Get.snackbar(
+                          Get.snackbar(
                               "Success",
                               "Product Deleted, Total and Change Updated!",
                               snackPosition: SnackPosition.BOTTOM,
                               backgroundColor: Colors.green,
                               colorText: Colors.white,
                             );
-                          }
                         },
                       ),
                     ],

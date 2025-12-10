@@ -110,14 +110,12 @@ Widget buildProductsTable(BuildContext context, WidgetRef ref, List<ProductModel
                                 ref.read(productNotifierProvider.notifier).editName(p.id!, nameController.text);
                                 ref.read(productNotifierProvider.notifier).fetchProducts();
                                 ref.read(managementNotifierProvider.notifier).fetchAll();
-                                if(context.mounted){
-                                  Get.snackbar(
+                                Get.snackbar(
                                     "Success", "Product name updated!",
                                     snackPosition: SnackPosition.BOTTOM,
                                     backgroundColor: Colors.green,
                                     colorText: Colors.white,
                                   );
-                                }
                               },
                             );
                           }
@@ -141,14 +139,12 @@ Widget buildProductsTable(BuildContext context, WidgetRef ref, List<ProductModel
                                 ref.read(productNotifierProvider.notifier).editPrice(p.id!, priceChange);
                                 ref.read(productNotifierProvider.notifier).fetchProducts();
                                 ref.read(managementNotifierProvider.notifier).fetchAll();
-                                if(context.mounted){
-                                  Get.snackbar(
+                                Get.snackbar(
                                     "Success", "Product price updated!",
                                     snackPosition: SnackPosition.BOTTOM,
                                     backgroundColor: Colors.green,
                                     colorText: Colors.white,
                                   );
-                                }
                               },
                             );
                           }
@@ -171,14 +167,12 @@ Widget buildProductsTable(BuildContext context, WidgetRef ref, List<ProductModel
                               ref.read(productNotifierProvider.notifier).editCategory(p.id!, selected);
                               ref.read(productNotifierProvider.notifier).fetchProducts();
                               ref.read(managementNotifierProvider.notifier).fetchAll();
-                              if(context.mounted){
-                                Get.snackbar(
+                              Get.snackbar(
                                   "Success", "Product category updated!",
                                   snackPosition: SnackPosition.BOTTOM,
                                   backgroundColor: Colors.green,
                                   colorText: Colors.white,
                                 );
-                              }
                             }
                           }
                         ),
@@ -206,15 +200,13 @@ Widget buildProductsTable(BuildContext context, WidgetRef ref, List<ProductModel
                                   ref.read(productNotifierProvider.notifier).editImage(p.id!, path);
                                   ref.read(productNotifierProvider.notifier).fetchProducts();
                                   ref.read(managementNotifierProvider.notifier).fetchAll();
-                                  if(context.mounted){
-                                    Get.snackbar(
+                                  Get.snackbar(
                                       "Success",
                                       "Product image updated!",
                                       snackPosition: SnackPosition.BOTTOM,
                                       backgroundColor: Colors.green,
                                       colorText: Colors.white,
                                     );
-                                  }
                                 }
                               },
                             );
@@ -253,14 +245,12 @@ Widget buildProductsTable(BuildContext context, WidgetRef ref, List<ProductModel
                           ref.read(productNotifierProvider.notifier).deleteProduct(p.id);
                           ref.read(productNotifierProvider.notifier).fetchProducts();
                           ref.read(managementNotifierProvider.notifier).fetchAll();
-                          if(context.mounted){
-                            Get.snackbar(
+                          Get.snackbar(
                               "Success", "Record Delete Successfully",
                               snackPosition: SnackPosition.BOTTOM,
                               backgroundColor: Colors.green,
                               colorText: Colors.white,
                             );
-                          }
                         }
                       )
                     ]

@@ -398,15 +398,13 @@ class ListScreen extends ConsumerWidget {
 
                                                             ref.read(selectedOrderProvider.notifier).state = null;
                                                             ref.read(managementNotifierProvider.notifier).fetchAll();
-                                                            if(context.mounted){
-                                                              Get.snackbar(
+                                                            Get.snackbar(
                                                                 "Success",
-                                                                "Product Refunded Successfully",
+                                                                "Order Refunded Successfully",
                                                                 snackPosition: SnackPosition.BOTTOM,
                                                                 backgroundColor: Colors.green,
                                                                 colorText: Colors.white,
                                                               );
-                                                            }
                                                             ref.read(managementNotifierProvider.notifier).fetchAll();
                                                             Navigator.pop(context);
                                                           }catch(e){
@@ -456,15 +454,13 @@ class ListScreen extends ConsumerWidget {
 
                                               ref.read(selectedOrderProvider.notifier).state = null;
                                               ref.read(managementNotifierProvider.notifier).fetchAll();
-                                              if(context.mounted){
-                                                Get.snackbar(
-                                                  "Success",
-                                                  "Product Added Successfully",
-                                                  snackPosition: SnackPosition.BOTTOM,
-                                                  backgroundColor: Colors.green,
-                                                  colorText: Colors.white,
-                                                );
-                                              }
+                                              Get.snackbar(
+                                                "Success",
+                                                "Order Done",
+                                                snackPosition: SnackPosition.BOTTOM,
+                                                backgroundColor: Colors.green,
+                                                colorText: Colors.white,
+                                              );
                                             }catch(e){
                                               print('error updating $e');
                                             }
