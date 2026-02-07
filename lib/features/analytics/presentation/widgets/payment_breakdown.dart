@@ -4,15 +4,11 @@ import 'package:fl_chart/fl_chart.dart';
 class PaymentBreakdown extends StatelessWidget {
   final double totalCash;
   final double totalGcash;
-  final List<Map<String, dynamic>> paymentData;
-  final String selectedPeriod;
 
   const PaymentBreakdown({
     super.key,
     required this.totalCash,
     required this.totalGcash,
-    required this.paymentData,
-    required this.selectedPeriod,
   });
 
   @override

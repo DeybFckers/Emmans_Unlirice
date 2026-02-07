@@ -2,12 +2,12 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:coffee_pos/features/analytics/provider/analytics_provider.dart';
 import 'package:coffee_pos/features/analytics/models/analytics_model.dart';
-import 'package:coffee_pos/features/analytics/presentation/widgets/sales_chart.dart';
-import 'package:coffee_pos/features/analytics/presentation/widgets/summary_card.dart';
-import 'package:coffee_pos/features/analytics/presentation/widgets/top_products.dart';
-import 'package:coffee_pos/features/analytics/presentation/widgets/category_revenue.dart';
-import 'package:coffee_pos/features/analytics/presentation/widgets/period_selector.dart';
-import 'package:coffee_pos/features/analytics/presentation/widgets/payment_breakdown.dart'; // Add this
+import 'package:coffee_pos/features/analytics/presentation/widgets/profit_summary_card.dart';
+import 'package:coffee_pos/features/analytics/presentation/widgets/shareholder_profit_list.dart';
+import 'package:coffee_pos/features/analytics/presentation/widgets/profit_breakdown_chart.dart';
+import 'package:coffee_pos/features/analytics/presentation/widgets/month_selector.dart';
+import 'package:coffee_pos/features/analytics/presentation/widgets/item_expenses_list.dart';
+import 'package:coffee_pos/features/analytics/presentation/widgets/payment_breakdown.dart';
 import 'package:coffee_pos/core/widgets/my_drawer.dart';
 
 class AnalyticsScreen extends ConsumerStatefulWidget {
@@ -22,8 +22,8 @@ class _AnalyticsScreenState extends ConsumerState<AnalyticsScreen> {
   void initState() {
     super.initState();
     WidgetsBinding.instance.addPostFrameCallback((_) {
-      final period = ref.read(selectedPeriodProvider);
-      ref.read(analyticsProvider.notifier).loadAnalytics(period);
+      final selectedMonth = ref.read(selectedMonthProvider);
+      ref.read(analyticsProvider.notifier).loadAnalytics(selectedMonth);
     });
   }
 
@@ -31,14 +31,14 @@ class _AnalyticsScreenState extends ConsumerState<AnalyticsScreen> {
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
     final analyticsData = ref.watch(analyticsProvider);
-    final selectedPeriod = ref.watch(selectedPeriodProvider);
+    final selectedMonth = ref.watch(selectedMonthProvider);
 
     return Scaffold(
       appBar: AppBar(
         elevation: 0,
         backgroundColor: const Color(0xFF4E342E),
         title: Text(
-          'Analytics',
+          'Shareholder Analytics',
           style: theme.textTheme.titleLarge?.copyWith(color: Colors.white),
         ),
       ),
@@ -48,7 +48,7 @@ class _AnalyticsScreenState extends ConsumerState<AnalyticsScreen> {
           color: Color.fromARGB(255, 245, 237, 224),
         ),
         child: analyticsData.when(
-          data: (data) => _buildContent(context, data, selectedPeriod),
+          data: (data) => _buildContent(context, data, selectedMonth),
           loading: () =>
               const Center(child: CircularProgressIndicator(strokeWidth: 3)),
           error: (err, stack) => Center(child: Text('Error: $err')),
@@ -58,10 +58,10 @@ class _AnalyticsScreenState extends ConsumerState<AnalyticsScreen> {
   }
 
   Widget _buildContent(
-      BuildContext context, AnalyticsData data, String period) {
+      BuildContext context, AnalyticsData data, String selectedMonth) {
     return RefreshIndicator(
       onRefresh: () async {
-        await ref.read(analyticsProvider.notifier).loadAnalytics(period);
+        await ref.read(analyticsProvider.notifier).loadAnalytics(selectedMonth);
       },
       child: SingleChildScrollView(
         physics: const AlwaysScrollableScrollPhysics(),
@@ -69,74 +69,86 @@ class _AnalyticsScreenState extends ConsumerState<AnalyticsScreen> {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            PeriodSelector(
-              selectedPeriod: period,
-              onChanged: (newPeriod) async {
-                ref.read(selectedPeriodProvider.notifier).state = newPeriod;
+            // Month Selector
+            MonthSelector(
+              selectedMonth: selectedMonth,
+              availableMonths: data.monthlySalesData
+                  .map((e) => e['Month'] as String)
+                  .toList(),
+              onChanged: (newMonth) async {
+                ref.read(selectedMonthProvider.notifier).state = newMonth;
                 await ref
                     .read(analyticsProvider.notifier)
-                    .loadAnalytics(newPeriod);
+                    .loadAnalytics(newMonth);
               },
             ),
             const SizedBox(height: 20),
             
-            // Summary Cards Row
+            // Profit Summary Cards
             Row(
               children: [
                 Expanded(
-                  child: SummaryCard(
-                    title: 'Total Sales',
-                    value: '₱${data.totalSales.toStringAsFixed(2)}',
+                  child: ProfitSummaryCard(
+                    title: 'Revenue',
+                    value: '₱${data.totalRevenue.toStringAsFixed(2)}',
                     icon: Icons.trending_up,
                     color: const Color(0xFF4CAF50),
-                    subtitle: 'Revenue generated',
+                    subtitle: 'Total sales',
                   ),
                 ),
                 const SizedBox(width: 12),
                 Expanded(
-                  child: SummaryCard(
-                    title: 'Total Orders',
-                    value: data.totalOrders.toString(),
-                    icon: Icons.receipt_long,
+                  child: ProfitSummaryCard(
+                    title: 'Expenses',
+                    value: '₱${(data.totalProductCosts + data.totalItemExpenses).toStringAsFixed(2)}',
+                    icon: Icons.trending_down,
+                    color: const Color(0xFFF44336),
+                    subtitle: 'Total costs',
+                  ),
+                ),
+                const SizedBox(width: 12),
+                Expanded(
+                  child: ProfitSummaryCard(
+                    title: 'Net Profit',
+                    value: '₱${data.totalNetProfit.toStringAsFixed(2)}',
+                    icon: Icons.account_balance_wallet,
                     color: const Color(0xFF2196F3),
-                    subtitle: 'Completed orders',
-                  ),
-                ),
-                const SizedBox(width: 12),
-                Expanded(
-                  child: SummaryCard(
-                    title: 'Avg Order',
-                    value: '₱${data.avgOrder.toStringAsFixed(2)}',
-                    icon: Icons.attach_money,
-                    color: const Color(0xFFFF9800),
-                    subtitle: 'Per transaction',
+                    subtitle: 'To distribute',
                   ),
                 ),
               ],
             ),
             const SizedBox(height: 24),
             
-            // Sales Chart
-            SalesChart(salesData: data.salesData, selectedPeriod: period),
+            // Profit Breakdown Chart
+            ProfitBreakdownChart(
+              revenue: data.totalRevenue,
+              productCosts: data.totalProductCosts,
+              itemExpenses: data.totalItemExpenses,
+              netProfit: data.totalNetProfit,
+            ),
             const SizedBox(height: 24),
             
-            // Payment Breakdown (NEW)
+            // Payment Breakdown
             PaymentBreakdown(
               totalCash: data.totalCash,
               totalGcash: data.totalGcash,
-              paymentData: data.paymentData,
-              selectedPeriod: period,
             ),
             const SizedBox(height: 24),
             
-            // Products and Categories Row
-            Row(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Expanded(child: TopSellingProducts(products: data.topProducts)),
-                const SizedBox(width: 16),
-                Expanded(child: CategoryRevenue(categories: data.categoryRevenue)),
-              ],
+            // Shareholder Profit Distribution
+            ShareholderProfitList(
+              shareholders: data.shareholderProfits,
+              totalProfit: data.totalNetProfit,
+            ),
+            const SizedBox(height: 24),
+            
+            // Item Expenses List
+            ItemExpensesList(
+              expenses: data.monthlyItemExpenses
+                  .where((e) => e['Month'] == selectedMonth)
+                  .toList(),
+              totalExpenses: data.totalItemExpenses,
             ),
           ],
         ),

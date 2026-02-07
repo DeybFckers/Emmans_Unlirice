@@ -1,23 +1,43 @@
 class AnalyticsData {
-  final List<Map<String, dynamic>> salesData;
-  final List<Map<String, dynamic>> topProducts;
-  final List<Map<String, dynamic>> categoryRevenue;
-  final List<Map<String, dynamic>> paymentData; // Add this
-  final double totalSales;
+  final List<Map<String, dynamic>> monthlySalesData;
+  final List<Map<String, dynamic>> monthlyPaymentData;
+  final List<Map<String, dynamic>> monthlyProfitData;
+  final List<Map<String, dynamic>> monthlyItemExpenses;
+  final List<ShareholderProfit> shareholderProfits;
+  final double totalRevenue;
+  final double totalProductCosts;
+  final double totalItemExpenses;
+  final double totalNetProfit;
+  final double totalCash;
+  final double totalGcash;
   final int totalOrders;
-  final double avgOrder;
-  final double totalCash; // Add this
-  final double totalGcash; // Add this
 
   AnalyticsData({
-    required this.salesData,
-    required this.topProducts,
-    required this.categoryRevenue,
-    required this.paymentData, // Add this
-    required this.totalSales,
+    required this.monthlySalesData,
+    required this.monthlyPaymentData,
+    required this.monthlyProfitData,
+    required this.monthlyItemExpenses,
+    required this.shareholderProfits,
+    required this.totalRevenue,
+    required this.totalProductCosts,
+    required this.totalItemExpenses,
+    required this.totalNetProfit,
+    required this.totalCash,
+    required this.totalGcash,
     required this.totalOrders,
-    required this.avgOrder,
-    required this.totalCash, // Add this
-    required this.totalGcash, // Add this
+  });
+}
+
+class ShareholderProfit {
+  final int shareholderId;
+  final String shareholderName;
+  final double percentage;
+  final double profitShare;
+
+  ShareholderProfit({
+    required this.shareholderId,
+    required this.shareholderName,
+    required this.percentage,
+    required this.profitShare,
   });
 }

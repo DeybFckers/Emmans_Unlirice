@@ -10,7 +10,6 @@ import 'package:flutter/material.dart';
 import 'package:coffee_pos/core/widgets/customTableContainer.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:intl/intl.dart';
-import 'package:get/get.dart';
 
 Widget buildCustomerTable(BuildContext context, WidgetRef ref, List<OrderModel> orders, Size screenSize) {
   return CustomTableContainer(

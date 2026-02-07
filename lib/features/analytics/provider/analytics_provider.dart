@@ -1,108 +1,126 @@
+import 'package:coffee_pos/core/database/inventoryitem_table.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:coffee_pos/core/database/analytics_table.dart';
 import 'package:coffee_pos/core/database/database_service.dart';
+import 'package:coffee_pos/core/database/shareholder_table.dart';
 import 'package:coffee_pos/features/analytics/models/analytics_model.dart';
 import 'package:flutter_riverpod/legacy.dart';
 
 class AnalyticsNotifier extends StateNotifier<AsyncValue<AnalyticsData>> {
   AnalyticsNotifier() : super(const AsyncValue.loading());
 
-  Future<void> loadAnalytics(String period) async {
+  Future<void> loadAnalytics(String selectedMonth) async {
     state = const AsyncValue.loading();
     state = await AsyncValue.guard(() async {
       final db = await StreetSideDatabase.instance.database;
 
-      // Determine table names based on period
-      String salesTableName;
-      String paymentTableName;
-      String orderByClause;
-      
-      switch (period) {
-        case 'Weekly':
-          salesTableName = AnalyticsTable.WeeklySalesTableName;
-          paymentTableName = AnalyticsTable.WeeklyPaymentTableName;
-          orderByClause = 'Week DESC';
+      // Fetch monthly sales data
+      final monthlySales = await db.query(
+        AnalyticsTable.MonthlySalesTableName,
+        limit: 12,
+        orderBy: 'Month DESC',
+      );
+
+      // Fetch monthly payment data
+      final monthlyPayments = await db.query(
+        AnalyticsTable.MonthlyPaymentTableName,
+        limit: 12,
+        orderBy: 'Month DESC',
+      );
+
+      // Fetch monthly profit data
+      final monthlyProfit = await db.query(
+        AnalyticsTable.MonthlyProfitTableName,
+        limit: 12,
+        orderBy: 'Month DESC',
+      );
+
+      // Fetch monthly item expenses with details
+      final monthlyExpenses = await db.rawQuery('''
+      SELECT
+        strftime('%Y-%m', ${InventoryItemTable.InventoryItemDate}) AS Month,
+        ${InventoryItemTable.InventoryItemName} AS Item_Name,
+        ${InventoryItemTable.InventoryItemCost} AS Item_Cost,
+        ${InventoryItemTable.InventoryItemDate} AS Item_Date
+      FROM ${InventoryItemTable.InventoryItemTableName}
+      ORDER BY ${InventoryItemTable.InventoryItemDate} DESC
+      ''');
+
+      // Calculate totals for selected month
+      double totalRevenue = 0.0;
+      double totalProductCosts = 0.0;
+      double totalItemExpenses = 0.0;
+      double totalNetProfit = 0.0;
+      double totalCash = 0.0;
+      double totalGcash = 0.0;
+      int totalOrders = 0;
+
+      // Find data for selected month
+      for (var profit in monthlyProfit) {
+        if (profit['Month'] == selectedMonth) {
+          totalRevenue = (profit['Revenue'] as num?)?.toDouble() ?? 0.0;
+          totalProductCosts = (profit['Product_Costs'] as num?)?.toDouble() ?? 0.0;
+          totalItemExpenses = (profit['Item_Expenses'] as num?)?.toDouble() ?? 0.0;
+          totalNetProfit = (profit['Net_Profit'] as num?)?.toDouble() ?? 0.0;
           break;
-        case 'Monthly':
-          salesTableName = AnalyticsTable.MonthlySalesTableName;
-          paymentTableName = AnalyticsTable.MonthlyPaymentTableName;
-          orderByClause = 'Month DESC';
-          break;
-        default:
-          salesTableName = AnalyticsTable.DailySalesTableName;
-          paymentTableName = AnalyticsTable.DailyPaymentTableName;
-          orderByClause = 'Sale_Date DESC';
+        }
       }
 
-      // Fetch sales data
-      final sales = await db.query(
-        salesTableName,
-        limit: 7,
-        orderBy: orderByClause,
-      );
-      final salesData = sales.reversed.toList();
+      for (var payment in monthlyPayments) {
+        if (payment['Month'] == selectedMonth) {
+          totalCash = (payment['Total_Cash'] as num?)?.toDouble() ?? 0.0;
+          totalGcash = (payment['Total_Gcash'] as num?)?.toDouble() ?? 0.0;
+          break;
+        }
+      }
 
-      // Fetch payment data
-      final payments = await db.query(
-        paymentTableName,
-        limit: 7,
-        orderBy: orderByClause,
-      );
-      final paymentData = payments.reversed.toList();
+      for (var sales in monthlySales) {
+        if (sales['Month'] == selectedMonth) {
+          totalOrders = (sales['Total_Orders'] as int?) ?? 0;
+          break;
+        }
+      }
 
-      // Calculate totals
-      final totalSales = salesData.fold<double>(0.0, (sum, item) {
-        final sales = item['Total_Sales'];
-        return sum + (sales != null ? (sales as num).toDouble() : 0.0);
-      });
-
-      final totalOrders = salesData.fold<int>(0, (sum, item) {
-        final orders = item['Total_Orders'];
-        return sum + (orders != null ? orders as int : 0);
-      });
-
-      final avgOrder = totalOrders > 0 ? totalSales / totalOrders : 0.0;
-
-      // Calculate payment totals
-      final totalCash = paymentData.fold<double>(0.0, (sum, item) {
-        final cash = item['Total_Cash'];
-        return sum + (cash != null ? (cash as num).toDouble() : 0.0);
-      });
-
-      final totalGcash = paymentData.fold<double>(0.0, (sum, item) {
-        final gcash = item['Total_Gcash'];
-        return sum + (gcash != null ? (gcash as num).toDouble() : 0.0);
-      });
-
-      // Top products
-      final topProducts = await db.query(
-        AnalyticsTable.TopSellingTableName,
-        limit: 5,
-        orderBy: 'Total_Sold DESC',
+      // Fetch shareholders and calculate profit distribution
+      final shareholders = await db.query(
+        ShareholderTable.ShareholderTableName,
+        orderBy: '${ShareholderTable.ShareholderPercentage} DESC',
       );
 
-      // Category revenue
-      final categoryRevenue = await db.query(
-        AnalyticsTable.CategoryRevenueTableName,
-        orderBy: 'Total_Revenue DESC',
-      );
+      final shareholderProfits = shareholders.map((shareholder) {
+        final percentage = (shareholder[ShareholderTable.ShareholderPercentage] as num).toDouble();
+        final profitShare = (totalNetProfit * percentage) / 100;
+
+        return ShareholderProfit(
+          shareholderId: shareholder[ShareholderTable.ShareholderID] as int,
+          shareholderName: shareholder[ShareholderTable.ShareholderName] as String,
+          percentage: percentage,
+          profitShare: profitShare,
+        );
+      }).toList();
 
       return AnalyticsData(
-        salesData: salesData,
-        topProducts: topProducts,
-        categoryRevenue: categoryRevenue,
-        paymentData: paymentData,
-        totalSales: totalSales,
-        totalOrders: totalOrders,
-        avgOrder: avgOrder,
+        monthlySalesData: monthlySales,
+        monthlyPaymentData: monthlyPayments,
+        monthlyProfitData: monthlyProfit,
+        monthlyItemExpenses: monthlyExpenses,
+        shareholderProfits: shareholderProfits,
+        totalRevenue: totalRevenue,
+        totalProductCosts: totalProductCosts,
+        totalItemExpenses: totalItemExpenses,
+        totalNetProfit: totalNetProfit,
         totalCash: totalCash,
         totalGcash: totalGcash,
+        totalOrders: totalOrders,
       );
     });
   }
 }
 
-final selectedPeriodProvider = StateProvider<String>((ref) => 'Daily');
+final selectedMonthProvider = StateProvider<String>((ref) {
+  final now = DateTime.now();
+  return '${now.year}-${now.month.toString().padLeft(2, '0')}';
+});
 
 final analyticsProvider =
     StateNotifierProvider<AnalyticsNotifier, AsyncValue<AnalyticsData>>(

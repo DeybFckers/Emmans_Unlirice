@@ -4,6 +4,7 @@ class ProductModel {
   final String name;
   final String category;
   final double price;
+  final double cost;
   final String imageUrl;
 
   ProductModel({
@@ -11,6 +12,7 @@ class ProductModel {
     required this.name,
     required this.category,
     required this.price,
+    required this.cost,
     required this.imageUrl,
   });
 
@@ -20,6 +22,7 @@ class ProductModel {
       name: map['Product_Name'] as String,
       category: map['Product_Category'] as String,
       price: (map['Product_Price'] as num).toDouble(),
+      cost: (map['Product_Cost'] as num).toDouble(),
       imageUrl: map['Product_Image'] as String,
     );
   }

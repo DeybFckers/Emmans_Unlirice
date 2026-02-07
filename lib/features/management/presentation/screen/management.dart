@@ -1,10 +1,12 @@
+import 'package:coffee_pos/core/widgets/choice_dialog.dart';
 import 'package:coffee_pos/core/widgets/container_tab.dart';
 import 'package:coffee_pos/core/widgets/my_drawer.dart';
 import 'package:coffee_pos/features/management/data/provider/management_provider.dart';
 import 'package:coffee_pos/features/management/presentation/screen/customer_management.dart';
+import 'package:coffee_pos/features/management/presentation/screen/inventory_management.dart';
 import 'package:coffee_pos/features/management/presentation/screen/orderlist_management.dart';
 import 'package:coffee_pos/features/management/presentation/screen/product_management.dart';
-import 'package:coffee_pos/features/management/presentation/widgets/add_product.dart';
+import 'package:coffee_pos/features/management/presentation/screen/shareholder_management.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
@@ -50,15 +52,15 @@ class _ManageScreenState extends ConsumerState<ManageScreen> {
               ),
             ),
             IconButton(
-              icon: Icon(Icons.add),
+              icon: const Icon(Icons.add),
               color: Colors.white,
               onPressed: () {
                 showDialog(
                   context: context,
-                  builder: (context) => AddProduct(),
+                  builder: (context) => const AddChoiceDialog(),
                 );
               },
-            )
+            ),
           ],
         ),
       ),
@@ -110,6 +112,20 @@ class _ManageScreenState extends ConsumerState<ManageScreen> {
                     name: 'Customer Order',
                     isSelected: selectedTab == 2,
                   ),
+                  const SizedBox(width: 10),
+                  ContainerTab(
+                    onTap: () => ref.read(selectedManageTabProvider.notifier).state = 3,
+                    icon: Icons.inventory,
+                    name: 'Inventory',
+                    isSelected: selectedTab == 3,
+                  ),
+                  const SizedBox(width: 10),
+                  ContainerTab(
+                    onTap: () => ref.read(selectedManageTabProvider.notifier).state = 4,
+                    icon: Icons.group,
+                    name: 'Shareholders',
+                    isSelected: selectedTab == 4,
+                  ),
                 ],
               ),
               const SizedBox(height: 10),
@@ -126,12 +142,23 @@ class _ManageScreenState extends ConsumerState<ManageScreen> {
                           .where((o) => o.name.toLowerCase().contains(searchQuery))
                           .toList();
                       return buildCustomerTable(context, ref, filteredOrders, screenSize);
-                    } else {
+                    } else if(selectedTab == 2) {
                       final filteredOrderLists = data.orderLists
                           .where((o) => o.CustomerName.toLowerCase().contains(searchQuery))
                           .toList();
                       return buildOrderListTable(context, ref, filteredOrderLists, screenSize);
+                    }else if (selectedTab == 3){
+                      final filteredInventory = data.inventoryitem
+                        .where((i) => i.name.toLowerCase().contains(searchQuery))
+                        .toList();
+                        return buildInventoryTable(context, ref, filteredInventory, screenSize);
+                    } else if (selectedTab == 4) {
+                      final filteredShareholders = data.shareholders
+                          .where((s) => s.name.toLowerCase().contains(searchQuery))
+                          .toList();
+                      return buildShareholderTable(context, ref, filteredShareholders, screenSize);
                     }
+                    return const Center(child: Text('Invalid tab'));
                   },
                   loading: () => const Center(child: CircularProgressIndicator()),
                   error: (err, st) => Center(child: Text('Error: $err')),

@@ -11,7 +11,6 @@ import 'package:coffee_pos/features/management/data/provider/orderlist_provider.
 import 'package:flutter/material.dart';
 import 'package:coffee_pos/core/widgets/customTableContainer.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:get/get.dart';
 
 Widget buildOrderListTable(BuildContext context, WidgetRef ref, List<orderListModel> items, Size screenSize) {
   return CustomTableContainer(

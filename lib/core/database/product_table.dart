@@ -4,5 +4,6 @@ class ProductTable {
   static const String ProductName = 'Product_Name';
   static const String ProductCategory = 'Product_Category';
   static const String ProductPrice = 'Product_Price';
+  static const String ProductCost = 'Product_Cost';
   static const String ProductImage = 'Product_Image';
 }

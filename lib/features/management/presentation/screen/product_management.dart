@@ -33,6 +33,14 @@ Widget buildProductsTable(BuildContext context, WidgetRef ref, List<ProductModel
           )
       )
       ),
+      DataColumn(label: Text('Cost',
+          style: TextStyle(
+              fontWeight: FontWeight.bold,
+              color: Colors.white,
+              fontSize: 15
+          )
+      )
+      ),
       DataColumn(label: Text('Category',
           style: TextStyle(
               fontWeight: FontWeight.bold,
@@ -65,6 +73,10 @@ Widget buildProductsTable(BuildContext context, WidgetRef ref, List<ProductModel
         )
         ),
         DataCell(Text(p.price.toString(),
+          style: TextStyle(fontSize: 12),
+        )
+        ),
+        DataCell(Text(p.cost.toString(),
           style: TextStyle(fontSize: 12),
         )
         ),
