@@ -7,7 +7,6 @@ import 'package:coffee_pos/features/management/utils/validator/add_validator.dar
 import 'package:coffee_pos/core/theme/input_style.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:get/get.dart';
 import 'package:file_picker/file_picker.dart';
 
 class AddProduct extends ConsumerStatefulWidget {
@@ -21,7 +20,6 @@ class _AddProductState extends ConsumerState<AddProduct> {
   final nameController = TextEditingController();
   final priceController = TextEditingController();
   final filenameController = TextEditingController();
-  final costController = TextEditingController();
   final formKey = GlobalKey<FormState>();
   String? selectedCategory;
   PlatformFile? pickedFile;
@@ -72,13 +70,6 @@ class _AddProductState extends ConsumerState<AddProduct> {
                 decoration: customInputDecoration('Price', Icons.attach_money),
                 keyboardType: TextInputType.number,
                 validator: AddValidator.price,
-              ),
-              SizedBox(height: 10),
-              TextFormField(
-                controller: costController,
-                decoration: customInputDecoration('Cost', Icons.attach_money),
-                keyboardType: TextInputType.number,
-                validator: AddValidator.cost,
               ),
               SizedBox(height: 10),
               DropdownButtonFormField<String>(
@@ -144,7 +135,6 @@ class _AddProductState extends ConsumerState<AddProduct> {
                 name: nameController.text.trim(),
                 category: selectedCategory!,
                 price: double.parse(priceController.text),
-                cost: double.parse(costController.text),
                 imageUrl: savedImagePath ?? '',
               );
 

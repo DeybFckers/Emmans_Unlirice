@@ -2,7 +2,6 @@ import 'package:coffee_pos/core/database/database_service.dart';
 import 'package:coffee_pos/core/database/inventoryitem_table.dart';
 import 'package:coffee_pos/core/database/order_table.dart';
 import 'package:coffee_pos/core/database/product_table.dart';
-import 'package:coffee_pos/core/database/shareholder_table.dart';
 import 'package:coffee_pos/features/management/data/models/shareholder_model.dart';
 import 'package:coffee_pos/features/management/data/models/InventoryItem_model.dart';
 import 'package:coffee_pos/features/management/data/models/orderlist_model.dart';

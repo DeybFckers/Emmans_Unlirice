@@ -45,6 +45,7 @@ dependencies:
   image: ^4.5.4
   intl: ^0.20.2
   fl_chart: ^1.1.1
+  sqflite_common_ffi: ^2.3.0
 
   # remove the override block entirely, OR
   # if you must keep an override, use a newer version:

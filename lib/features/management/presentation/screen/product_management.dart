@@ -11,7 +11,6 @@ import 'package:flutter/material.dart';
 import 'package:coffee_pos/core/widgets/customTableContainer.dart';
 import 'package:coffee_pos/features/management/data/models/product_model.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:get/get.dart';
 
 Widget buildProductsTable(BuildContext context, WidgetRef ref, List<ProductModel> products, Size screenSize) {
   return CustomTableContainer(
@@ -26,14 +25,6 @@ Widget buildProductsTable(BuildContext context, WidgetRef ref, List<ProductModel
       )
       ),
       DataColumn(label: Text('Price',
-          style: TextStyle(
-              fontWeight: FontWeight.bold,
-              color: Colors.white,
-              fontSize: 15
-          )
-      )
-      ),
-      DataColumn(label: Text('Cost',
           style: TextStyle(
               fontWeight: FontWeight.bold,
               color: Colors.white,
@@ -73,10 +64,6 @@ Widget buildProductsTable(BuildContext context, WidgetRef ref, List<ProductModel
         )
         ),
         DataCell(Text(p.price.toString(),
-          style: TextStyle(fontSize: 12),
-        )
-        ),
-        DataCell(Text(p.cost.toString(),
           style: TextStyle(fontSize: 12),
         )
         ),
@@ -120,7 +107,7 @@ Widget buildProductsTable(BuildContext context, WidgetRef ref, List<ProductModel
                               icon: Icons.fastfood,
                               validator: ProductValidator.productName,
                               onConfirm: () {
-                                ref.read(productNotifierProvider.notifier).editName(p.id!, nameController.text);
+                                ref.read(productNotifierProvider.notifier).editName(p.id, nameController.text);
                                 ref.read(productNotifierProvider.notifier).fetchProducts();
                                 ref.read(managementNotifierProvider.notifier).fetchAll();
                                                              
@@ -150,7 +137,7 @@ Widget buildProductsTable(BuildContext context, WidgetRef ref, List<ProductModel
                               keyboardType: TextInputType.number,
                               onConfirm: () {
                                 final priceChange = double.tryParse(priceController.text) ?? 0.0;
-                                ref.read(productNotifierProvider.notifier).editPrice(p.id!, priceChange);
+                                ref.read(productNotifierProvider.notifier).editPrice(p.id, priceChange);
                                 ref.read(productNotifierProvider.notifier).fetchProducts();
                                 ref.read(managementNotifierProvider.notifier).fetchAll();
                                 showCustomSnackBar(
@@ -178,7 +165,7 @@ Widget buildProductsTable(BuildContext context, WidgetRef ref, List<ProductModel
                             );
 
                             if (selected != null) {
-                              ref.read(productNotifierProvider.notifier).editCategory(p.id!, selected);
+                              ref.read(productNotifierProvider.notifier).editCategory(p.id, selected);
                               ref.read(productNotifierProvider.notifier).fetchProducts();
                               ref.read(managementNotifierProvider.notifier).fetchAll();
                                 showCustomSnackBar(
@@ -211,7 +198,7 @@ Widget buildProductsTable(BuildContext context, WidgetRef ref, List<ProductModel
                               onConfirm: () async {
                                 if (selectedFile != null) {
                                   final path = await FileHelper.saveFilePermanently(selectedFile!);
-                                  ref.read(productNotifierProvider.notifier).editImage(p.id!, path);
+                                  ref.read(productNotifierProvider.notifier).editImage(p.id, path);
                                   ref.read(productNotifierProvider.notifier).fetchProducts();
                                   ref.read(managementNotifierProvider.notifier).fetchAll();
                                   showCustomSnackBar(

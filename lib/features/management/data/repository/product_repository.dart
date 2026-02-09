@@ -12,7 +12,6 @@ class ProductRepository{
         ProductTable.ProductName: product.name,
         ProductTable.ProductCategory: product.category,
         ProductTable.ProductPrice: product.price,
-        ProductTable.ProductCost: product.cost,
         ProductTable.ProductImage: product.imageUrl,
       });
     } catch (e) {

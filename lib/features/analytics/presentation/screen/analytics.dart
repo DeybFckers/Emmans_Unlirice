@@ -100,7 +100,7 @@ class _AnalyticsScreenState extends ConsumerState<AnalyticsScreen> {
                 Expanded(
                   child: ProfitSummaryCard(
                     title: 'Expenses',
-                    value: '₱${(data.totalProductCosts + data.totalItemExpenses).toStringAsFixed(2)}',
+                    value: '₱${data.totalItemExpenses.toStringAsFixed(2)}',
                     icon: Icons.trending_down,
                     color: const Color(0xFFF44336),
                     subtitle: 'Total costs',
@@ -123,7 +123,6 @@ class _AnalyticsScreenState extends ConsumerState<AnalyticsScreen> {
             // Profit Breakdown Chart
             ProfitBreakdownChart(
               revenue: data.totalRevenue,
-              productCosts: data.totalProductCosts,
               itemExpenses: data.totalItemExpenses,
               netProfit: data.totalNetProfit,
             ),

@@ -5,7 +5,6 @@ class AnalyticsData {
   final List<Map<String, dynamic>> monthlyItemExpenses;
   final List<ShareholderProfit> shareholderProfits;
   final double totalRevenue;
-  final double totalProductCosts;
   final double totalItemExpenses;
   final double totalNetProfit;
   final double totalCash;
@@ -19,7 +18,6 @@ class AnalyticsData {
     required this.monthlyItemExpenses,
     required this.shareholderProfits,
     required this.totalRevenue,
-    required this.totalProductCosts,
     required this.totalItemExpenses,
     required this.totalNetProfit,
     required this.totalCash,

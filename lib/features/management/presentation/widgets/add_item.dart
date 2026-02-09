@@ -48,9 +48,11 @@ class _AddInventoryItemState extends ConsumerState<AddInventoryItem> {
               SizedBox(height: 10),
               TextFormField(
                 controller: costController,
-                decoration: customInputDecoration('Item Cost', Icons.fastfood),
+                decoration: customInputDecoration('Item Cost', Icons.attach_money),
                 validator: ItemValidator.cost,
+                keyboardType: TextInputType.numberWithOptions(decimal: true),
               ),
+              SizedBox(height: 10),
             ],
           ),
         ),

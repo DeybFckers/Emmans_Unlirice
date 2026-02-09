@@ -3,22 +3,18 @@ import 'package:fl_chart/fl_chart.dart';
 
 class ProfitBreakdownChart extends StatelessWidget {
   final double revenue;
-  final double productCosts;
   final double itemExpenses;
   final double netProfit;
 
   const ProfitBreakdownChart({
     super.key,
     required this.revenue,
-    required this.productCosts,
     required this.itemExpenses,
     required this.netProfit,
   });
 
   @override
   Widget build(BuildContext context) {
-    final totalExpenses = productCosts + itemExpenses;
-
     return Container(
       padding: const EdgeInsets.all(24),
       decoration: BoxDecoration(
@@ -76,17 +72,6 @@ class ProfitBreakdownChart extends StatelessWidget {
                         centerSpaceRadius: 60,
                         sections: [
                           PieChartSectionData(
-                            color: const Color(0xFFF44336),
-                            value: productCosts,
-                            title: '${(productCosts / revenue * 100).toStringAsFixed(1)}%',
-                            radius: 60,
-                            titleStyle: const TextStyle(
-                              fontSize: 12,
-                              fontWeight: FontWeight.bold,
-                              color: Colors.white,
-                            ),
-                          ),
-                          PieChartSectionData(
                             color: const Color(0xFFFF9800),
                             value: itemExpenses,
                             title: '${(itemExpenses / revenue * 100).toStringAsFixed(1)}%',
@@ -116,14 +101,6 @@ class ProfitBreakdownChart extends StatelessWidget {
                 const SizedBox(height: 32),
 
                 // Legend and Details
-                _buildBreakdownItem(
-                  'Product Costs (COGS)',
-                  productCosts,
-                  revenue,
-                  const Color(0xFFF44336),
-                  Icons.inventory_2,
-                ),
-                const SizedBox(height: 12),
                 _buildBreakdownItem(
                   'Item Expenses',
                   itemExpenses,

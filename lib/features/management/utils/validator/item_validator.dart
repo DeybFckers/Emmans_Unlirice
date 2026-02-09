@@ -9,12 +9,14 @@ class ItemValidator {
 
   static String? cost(String? value){
     if(value == null || value.isEmpty){
-      return 'Please enter Product Cost';
+      return 'Please enter Item Cost';
     }
-
-    final number = double.tryParse(value);
-    if (number == null || number <= 0) {
-      return 'Please enter a valid Cost';
+    final cost = double.tryParse(value);
+    if(cost == null){
+      return 'Please enter a valid number';
+    }
+    if(cost <= 0){
+      return 'Cost must be greater than 0';
     }
     return null;
   }

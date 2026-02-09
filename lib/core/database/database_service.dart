@@ -34,7 +34,6 @@ class StreetSideDatabase {
           ${ProductTable.ProductName} TEXT,
           ${ProductTable.ProductCategory} TEXT CHECK (${ProductTable.ProductCategory} IN ('Coffee', 'Food', 'Drinks', 'Short Order')) NOT NULL,
           ${ProductTable.ProductPrice} REAL NOT NULL,
-          ${ProductTable.ProductCost} REAL NOT NULL,
           ${ProductTable.ProductImage} TEXT
         )
         ''');
@@ -145,19 +144,6 @@ class StreetSideDatabase {
     ''');
 
     db.execute('''
-    CREATE VIEW IF NOT EXISTS ${AnalyticsTable.MonthlyCOGSTableName} AS
-    SELECT 
-      strftime('%Y-%m', o.${OrderTable.OrderCreatedAT}) AS Month,
-      SUM(oi.${OrderTable.ItemQuantity} * p.${ProductTable.ProductCost}) AS Total_Product_Cost
-    FROM ${OrderTable.OrderTableName} o
-    JOIN ${OrderTable.ItemTableName} oi ON o.${OrderTable.OrderID} = oi.${OrderTable.ItemOrder}
-    JOIN ${ProductTable.ProductTableName} p ON oi.${OrderTable.ItemProduct} = p.${ProductTable.ProductID}
-    WHERE o.${OrderTable.OrderStatus} = 'Completed'
-    GROUP BY Month
-    ORDER BY Month DESC;
-    ''');
-
-    db.execute('''
     CREATE VIEW IF NOT EXISTS ${AnalyticsTable.MonthlyItemExpensesTableName} AS
     SELECT 
       strftime('%Y-%m', ${InventoryItemTable.InventoryItemDate}) AS Month,
@@ -172,11 +158,9 @@ class StreetSideDatabase {
     SELECT 
       s.Month,
       s.Total_Sales AS Revenue,
-      COALESCE(c.Total_Product_Cost, 0) AS Product_Costs,
       COALESCE(e.Total_Item_Expenses, 0) AS Item_Expenses,
-      (s.Total_Sales - COALESCE(c.Total_Product_Cost, 0) - COALESCE(e.Total_Item_Expenses, 0)) AS Net_Profit
+      (s.Total_Sales - COALESCE(e.Total_Item_Expenses, 0)) AS Net_Profit
     FROM ${AnalyticsTable.MonthlySalesTableName} s
-    LEFT JOIN ${AnalyticsTable.MonthlyCOGSTableName} c ON s.Month = c.Month
     LEFT JOIN ${AnalyticsTable.MonthlyItemExpensesTableName} e ON s.Month = e.Month
     ORDER BY s.Month DESC;
     ''');

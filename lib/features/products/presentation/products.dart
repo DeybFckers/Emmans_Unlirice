@@ -15,7 +15,6 @@ import 'package:coffee_pos/features/products/data/provider/tab_provider.dart';
 import 'package:coffee_pos/features/products/utils/validator/checkout_validator.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:get/get.dart';
 import 'package:flutter/cupertino.dart';
 
 class ProductScreen extends ConsumerStatefulWidget {
@@ -556,8 +555,8 @@ class _ProductScreenState extends ConsumerState<ProductScreen> {
                                         totalAmount: discountedTotal,
                                         amountGiven: selectedPaymentMethod == 'Cash' ? cashGiven : discountedTotal,
                                         change: selectedPaymentMethod == 'Cash' ? cashGiven - discountedTotal : 0.0,
-                                        paymentMethod: selectedPaymentMethod ?? 'Cash',
-                                        orderType: selectedOrderType ?? 'Dine In',
+                                        paymentMethod: selectedPaymentMethod,
+                                        orderType: selectedOrderType,
                                         discounted: isDiscounted ? 1 : 0,
                                         createdAt: DateTime.now().toIso8601String(),
                                       );

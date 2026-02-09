@@ -48,7 +48,6 @@ class AnalyticsNotifier extends StateNotifier<AsyncValue<AnalyticsData>> {
 
       // Calculate totals for selected month
       double totalRevenue = 0.0;
-      double totalProductCosts = 0.0;
       double totalItemExpenses = 0.0;
       double totalNetProfit = 0.0;
       double totalCash = 0.0;
@@ -59,7 +58,6 @@ class AnalyticsNotifier extends StateNotifier<AsyncValue<AnalyticsData>> {
       for (var profit in monthlyProfit) {
         if (profit['Month'] == selectedMonth) {
           totalRevenue = (profit['Revenue'] as num?)?.toDouble() ?? 0.0;
-          totalProductCosts = (profit['Product_Costs'] as num?)?.toDouble() ?? 0.0;
           totalItemExpenses = (profit['Item_Expenses'] as num?)?.toDouble() ?? 0.0;
           totalNetProfit = (profit['Net_Profit'] as num?)?.toDouble() ?? 0.0;
           break;
@@ -106,7 +104,6 @@ class AnalyticsNotifier extends StateNotifier<AsyncValue<AnalyticsData>> {
         monthlyItemExpenses: monthlyExpenses,
         shareholderProfits: shareholderProfits,
         totalRevenue: totalRevenue,
-        totalProductCosts: totalProductCosts,
         totalItemExpenses: totalItemExpenses,
         totalNetProfit: totalNetProfit,
         totalCash: totalCash,
